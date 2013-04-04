@@ -13,22 +13,15 @@ type
   TForm1 = class(TForm)
     GroupBox1: TGroupBox;
     ADOConnection1: TADOConnection;
-    ADODataSet1: TADODataSet;
-    DataSource1: TDataSource;
-    ADODataSet2: TADODataSet;
     Button1: TButton;
     Button2: TButton;
-    DataSource2: TDataSource;
-    ADOQuery1: TADOQuery;
     Memo1: TMemo;
-    Button3: TButton;
     Chart1: TChart;
     ChartTool1: TGanttTool;
     Series1: TGanttSeries;
     CheckBox1: TCheckBox;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
     procedure Chart1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -64,6 +57,14 @@ type
     procedure print(printString : String);
     procedure printZlecenia(zlecenia : TZlecenia);
     procedure printEtapyZlecenia(etapyZlecenia : TEtapyZlecenia);
+
+    function createQuery(sqlString : String) : TADOQuery;
+    function fetchQuery(sqlString : String) : TADOQuery;
+    procedure executeQuery(sqlString : String);
+
+    function columnExistsInTable(columnName, tableName : String) : Boolean;
+    procedure addColumnToTable(columnName, tableName, dataType : String);
+    procedure dropColumnInTable(columnName, tableName : String);
     { Private declarations }
   public
     { Public declarations }
@@ -78,39 +79,6 @@ var
 implementation
 
 {$R *.dfm}
-
-function StringFromArray(A: Array of Integer) : String;
-var
-  I: Integer;
-  ReturnString: string;
-begin
-  for I in A do
-  begin
-    ReturnString := ReturnString + ' ' + IntToStr(I);
-  end;
-  Result := ReturnString;
-end;
-
-procedure SortArray(var A: Array of Integer);
-var
-  I, J, X: Integer;
-begin
-  if Length(A) > 1 then
-  begin
-    for I := 0 to Length(A) - 1 do
-    begin
-      for J := 1 to Length(A) - I do
-      begin
-        if A[J - 1] > A[J] then
-        begin
-          X := A[J - 1];
-          A[J - 1] := A[J];
-          A[J] := X;
-        end;
-      end;
-    end;
-  end;
-end;
 
 procedure TForm1.harmonogramuj;
 var
@@ -139,13 +107,10 @@ var
   mojeZlecenia : TZlecenia;
   mojeZleceniePtr : ^TZlecenie;
 begin
-  Query := TADOQuery.Create(nil);
-  Query.Connection := ADOConnection1;
-  Query.SQL.Add('SELECT * '+
-                'FROM zlecenia '+
-                'WHERE status = ''wystawione'' '+
-                'ORDER BY rok asc, miesiac asc');
-  Query.Open;
+  Query := fetchQuery('SELECT * '+
+                      'FROM zlecenia '+
+                      'WHERE status = ''wystawione'' '+
+                      'ORDER BY rok asc, miesiac asc');
 
   while not Query.Eof do
   begin
@@ -195,6 +160,59 @@ begin
   end;
 end;
 
+function TForm1.columnExistsInTable(columnName, tableName : String) : Boolean;
+var
+  Query : TADOQuery;
+begin
+  Query := fetchQuery('SELECT * '+
+                      'FROM '+ tableName);
+
+  if Query.FieldList.Find(columnName) = nil then Result := False
+  else Result := True;
+
+  Query.Destroy;
+end;
+
+procedure TForm1.addColumnToTable(columnName, tableName, dataType: String);
+begin
+  executeQuery('ALTER TABLE '+ tableName + ' '+
+               'ADD '+ columnName + ' ' + dataType);
+end;
+
+procedure TForm1.dropColumnInTable(columnName: string; tableName: string);
+begin
+  executeQuery('ALTER TABLE '+ tableName + ' '+
+               'DROP COLUMN '+ columnName);
+end;
+
+function TForm1.createQuery(sqlString: string) : TADOQuery;
+var
+  Query : TADOQuery;
+begin
+  Query := TADOQuery.Create(nil);
+  Query.Connection := ADOConnection1;
+  Query.SQL.Add(sqlString);
+  Result := Query;
+end;
+
+function TForm1.fetchQuery(sqlString: string) : TADOQuery;
+var
+  Query : TADOQuery;
+begin
+  Query := createQuery(sqlString);
+  Query.Open;
+  Result := Query;
+end;
+
+procedure TForm1.executeQuery(sqlString: string);
+var
+  Query : TADOQuery;
+begin
+  Query := createQuery(sqlString);
+  Query.ExecSQL;
+  Query.Destroy;
+end;
+
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
@@ -212,13 +230,10 @@ var
   mojeEtapyZlecenia : TEtapyZlecenia;
   mojEtapZleceniaPtr : ^TEtapZlecenia;
 begin
-  Query := TADOQuery.Create(nil);
-  Query.Connection := ADOConnection1;
-  Query.SQL.Add('SELECT * '+
-                'FROM zlec_technologie_etapy '+
-                'WHERE id_zlec_technologie = '+ IntToStr(ID_ZLEC_TECHNOLOGIE) + ' ' +
-                'ORDER BY nr_etapu asc');
-  Query.Open;
+  Query := fetchQuery('SELECT * '+
+                      'FROM zlec_technologie_etapy '+
+                      'WHERE id_zlec_technologie = '+ IntToStr(ID_ZLEC_TECHNOLOGIE) + ' ' +
+                      'ORDER BY nr_etapu asc');
 
   while not Query.Eof do
   begin
@@ -275,21 +290,6 @@ end;
 procedure TForm1.Button2Click(Sender: TObject);
 begin
   harmonogramuj;
-end;
-
-procedure TForm1.Button3Click(Sender: TObject);
-begin
-  ADOQuery1.SQL.Add('SELECT * FROM ZLEC_TECHNOLOGIE order by kod_technologii asc');
-  ADOQuery1.Open;
-  while not AdoQuery1.eof do
-  begin
-    Memo1.Text := Memo1.Text + format('%s %s %s',
-      [ADOQuery1.FieldByname('KOD_TECHNOLOGII').AsString,
-        ADOQuery1.FieldByname('NAZ_TECHNOLOGII').AsString,
-        ADOQuery1.FieldByname('DATE').AsString]) + #13#10;
-    ADOQuery1.Next;
-  end;
-
 end;
 
 procedure TForm1.Chart1MouseUp(Sender: TObject; Button: TMouseButton;
