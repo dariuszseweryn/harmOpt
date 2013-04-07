@@ -1,11 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
+    <Transaction>1899-12-30 00:00:00.000.187,=C:\Users\Darek\Documents\GitHub\harmOpt\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.621,C:\Users\Darek\Documents\GitHub\harmOpt\Unit1.pas=C:\Users\Darek\Documents\GitHub\harmOpt\DataBaseHelper.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.141,=C:\Users\Darek\Documents\GitHub\harmOpt\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.873,C:\Users\Darek\Documents\GitHub\harmOpt\Unit1.pas=C:\Users\Darek\Documents\GitHub\harmOpt\QueryHelper.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.013,C:\Users\Darek\Documents\RAD Studio\Projects\Testy\Project1.dproj=C:\Users\Darek\Documents\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.984,C:\Users\Darek\Documents\GitHub\harmOpt\Unit1.pas=C:\Users\Darek\Documents\GitHub\harmOpt\EtapyZlecen.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.168,=C:\Users\Darek\Documents\GitHub\harmOpt\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.309,=C:\Users\Darek\Documents\GitHub\harmOpt\Unit1.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.722,C:\Users\Darek\Documents\RAD Studio\Projects\Testy\Unit1.dfm=C:\Users\Darek\Documents\RAD Studio\Projects\Unit1.dfm</Transaction>
-    <Transaction>1899-12-30 00:00:00.000.385,C:\Users\Darek\Documents\RAD Studio\Projects\Testy\Unit1.dfm=C:\Users\Darek\Documents\RAD Studio\Projects\Testy\MainWindow.dfm</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.534,=C:\Users\Darek\Documents\GitHub\harmOpt\Unit2.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.799,=C:\Users\Darek\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.385,C:\Users\Darek\Documents\RAD Studio\Projects\Testy\Unit1.dfm=C:\Users\Darek\Documents\RAD Studio\Projects\Testy\MainWindow.dfm</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.495,C:\Users\Darek\Documents\GitHub\harmOpt\Unit1.pas=C:\Users\Darek\Documents\GitHub\harmOpt\EtapZlecenia.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.722,C:\Users\Darek\Documents\RAD Studio\Projects\Testy\Unit1.pas=C:\Users\Darek\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
     <Transaction>1899-12-30 00:00:00.000.385,C:\Users\Darek\Documents\RAD Studio\Projects\Testy\Unit1.pas=C:\Users\Darek\Documents\RAD Studio\Projects\Testy\MainWindow.pas</Transaction>
-    <Transaction>1899-12-30 00:00:00.000.013,C:\Users\Darek\Documents\RAD Studio\Projects\Testy\Project1.dproj=C:\Users\Darek\Documents\RAD Studio\Projects\Project1.dproj</Transaction>
   </Transactions>
 </BorlandProject>

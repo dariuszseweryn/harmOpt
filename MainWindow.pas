@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB,
   Bde.DBTables, Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, VCLTee.TeEngine,
   VCLTee.Series, VCLTee.GanttCh, VCLTee.TeeGanttTool, VCLTee.TeeProcs,
-  VCLTee.Chart;
+  VCLTee.Chart, DataBaseHelper, EtapyZlecen, EtapZlecenia;
 
 type
   TForm1 = class(TForm)
@@ -29,42 +29,11 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure CheckBox1Click(Sender: TObject);
   private
-  type
-    TZlecenie = record
-      ID_ZLEC_TECHNOLOGIE : Integer;
-      ILOSC_ZLECONA : Integer;
-    end;
-
-    TEtapZlecenia = record
-      TPZ_M : Integer;
-      TJ_M : Integer;
-      ID_STANOWISKA : Integer;
-      ID_RODZAJE_STANOWISK : Integer;
-    end;
-    TZlecenia = Array of TZlecenie;
-    TEtapyZlecenia = Array of TEtapZlecenia;
 
     procedure harmonogramuj;
-    function wyciagnijZlecenia : TZlecenia;
-    function wyciagnijEtapy(ID_ZLEC_TECHNOLOGIE : Integer) : TEtapyZlecenia;
-    function obliczCzasEtapu(TPZ_M : Integer;
-                        TJ_M : Integer;
-               iloscZlecenia : Integer) : Integer;
-    procedure zajmijStanowisko(ID_STANOWISKA : Integer;
-                                   czasEtapu : Integer);
 
     //helpery
     procedure print(printString : String);
-    procedure printZlecenia(zlecenia : TZlecenia);
-    procedure printEtapyZlecenia(etapyZlecenia : TEtapyZlecenia);
-
-    function createQuery(sqlString : String) : TADOQuery;
-    function fetchQuery(sqlString : String) : TADOQuery;
-    procedure executeQuery(sqlString : String);
-
-    function columnExistsInTable(columnName, tableName : String) : Boolean;
-    procedure addColumnToTable(columnName, tableName, dataType : String);
-    procedure dropColumnInTable(columnName, tableName : String);
     { Private declarations }
   public
     { Public declarations }
@@ -72,8 +41,7 @@ type
 
 var
   Form1 : TForm1;
-  MyString : string;
-  MyArray : Array of Integer;
+  DBH : TDataBaseHelper;
   LastDraggedBarNumber : Integer = -1;
 
 implementation
@@ -82,135 +50,22 @@ implementation
 
 procedure TForm1.harmonogramuj;
 var
-  mojeZlecenia : TZlecenia;
-  mojeEtapyZlecenia : TEtapyZlecenia;
-  zlecenie : TZlecenie;
-  czasEtapu : Integer;
-begin
-  mojeZlecenia := wyciagnijZlecenia();
-  printZlecenia(mojeZlecenia);
-  for zlecenie in mojeZlecenia do
-  begin
-    mojeEtapyZlecenia := wyciagnijEtapy(zlecenie.ID_ZLEC_TECHNOLOGIE);
-    printEtapyZlecenia(mojeEtapyZlecenia);
-//    for etapZlecenia in etapyZlecenia do
-//    begin
-//      czasEtapu := obliczCzasEtapu(etapZlecenia.TPZ_M, etapZlecenia.TJ_M, zlecenie.iloscZlecenia);
-//      zajmijStanowisko(etapZlecenia.ID_STANOWISKA, czasEtapu);
-//    end;
-  end;
-end;
-
-function TForm1.wyciagnijZlecenia() : TZlecenia;
-var
-  Query : TADOQuery;
-  mojeZlecenia : TZlecenia;
-  mojeZleceniePtr : ^TZlecenie;
-begin
-  Query := fetchQuery('SELECT * '+
-                      'FROM zlecenia '+
-                      'WHERE status = ''wystawione'' '+
-                      'ORDER BY rok asc, miesiac asc');
-
-  while not Query.Eof do
-  begin
-    New(mojeZleceniePtr); // nowy record
-
-    SetLength(mojeZlecenia, Length(mojeZlecenia) + 1); // zwiekszamy rozmiar tablicy
-
-    mojeZleceniePtr.ID_ZLEC_TECHNOLOGIE := Query.FieldByName('ID_ZLEC_TECHNOLOGIE').AsInteger; // ustawianie rekordu
-    mojeZleceniePtr.ILOSC_ZLECONA := Query.FieldByName('ILOSC_ZLECONA').AsInteger;
-
-    mojeZlecenia[Length(mojeZlecenia) - 1] := mojeZleceniePtr^; // na ostatnim miejscu wrzucamy nowy rekord
-
-    Dispose(mojeZleceniePtr); // pozbywamy sie pointera do utworzonego recordu
-
-    Query.Next;
-  end;
-
-  Query.Destroy;
-  Result := mojeZlecenia;
-end;
-
-procedure TForm1.printEtapyZlecenia(etapyZlecenia : TEtapyZlecenia);
-var
+  etapyZlecen : TEtapyZlecen;
   etapZlecenia : TEtapZlecenia;
 begin
-  print(#13#10 + '=sprawdzenie etapów zlecenia=');
-  for etapZlecenia in etapyZlecenia do
+  DBH := TDataBaseHelper.HelperWithConnection(ADOConnection1);
+  etapyZlecen := DBH.wyciagnijEtapyZlecenDoHarmonogramowania;
+  for etapZlecenia in etapyZlecen.ArrayEZ do
   begin
-    print(format('TPZ_M = %d ; TJ_M = %d ; ID_STANOWISKA = %d ; ID_RODZAJE_STANOWISK = %d',
-      [etapZlecenia.TPZ_M,
-       etapZlecenia.TJ_M,
-       etapZlecenia.ID_STANOWISKA,
-       etapZlecenia.ID_RODZAJE_STANOWISK]));
+    print('ID_ZLECENIA ' + IntToStr(etapZlecenia.ID_ZLECENIA) + ' ' +
+          'ID_ZLEC_TECHNOLOGIE ' + IntToStr(etapZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
+          'ILOSC_ZLECONA ' + IntToStr(etapZlecenia.ILOSC_ZLECONA) + ' ' +
+          'NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU) + ' ' +
+          'TPZ_M ' + IntToStr(etapZlecenia.TPZ_M) + ' ' +
+          'TJ_M ' + IntToStr(etapZlecenia.TJ_M) + ' ' +
+          'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
+          'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK));
   end;
-end;
-
-procedure TForm1.printZlecenia(zlecenia : TZlecenia);
-var
-  zlecenie : TZlecenie;
-begin
-  print(#13#10 + '=sprawdzenie zleceñ=');
-  for zlecenie in zlecenia do
-  begin
-    print(format('ID_ZLEC_TECHNOLOGIE = %d ; ILOSC_ZLECONA = %d',
-      [zlecenie.ID_ZLEC_TECHNOLOGIE,
-       zlecenie.ILOSC_ZLECONA]));
-  end;
-end;
-
-function TForm1.columnExistsInTable(columnName, tableName : String) : Boolean;
-var
-  Query : TADOQuery;
-begin
-  Query := fetchQuery('SELECT * '+
-                      'FROM '+ tableName);
-
-  if Query.FieldList.Find(columnName) = nil then Result := False
-  else Result := True;
-
-  Query.Destroy;
-end;
-
-procedure TForm1.addColumnToTable(columnName, tableName, dataType: String);
-begin
-  executeQuery('ALTER TABLE '+ tableName + ' '+
-               'ADD '+ columnName + ' ' + dataType);
-end;
-
-procedure TForm1.dropColumnInTable(columnName: string; tableName: string);
-begin
-  executeQuery('ALTER TABLE '+ tableName + ' '+
-               'DROP COLUMN '+ columnName);
-end;
-
-function TForm1.createQuery(sqlString: string) : TADOQuery;
-var
-  Query : TADOQuery;
-begin
-  Query := TADOQuery.Create(nil);
-  Query.Connection := ADOConnection1;
-  Query.SQL.Add(sqlString);
-  Result := Query;
-end;
-
-function TForm1.fetchQuery(sqlString: string) : TADOQuery;
-var
-  Query : TADOQuery;
-begin
-  Query := createQuery(sqlString);
-  Query.Open;
-  Result := Query;
-end;
-
-procedure TForm1.executeQuery(sqlString: string);
-var
-  Query : TADOQuery;
-begin
-  Query := createQuery(sqlString);
-  Query.ExecSQL;
-  Query.Destroy;
 end;
 
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
@@ -224,67 +79,17 @@ begin
   Memo1.Text := Memo1.Text + printString + #13#10;
 end;
 
-function TForm1.wyciagnijEtapy(ID_ZLEC_TECHNOLOGIE : Integer) : TEtapyZlecenia;
-var
-  Query : TADOQuery;
-  mojeEtapyZlecenia : TEtapyZlecenia;
-  mojEtapZleceniaPtr : ^TEtapZlecenia;
-begin
-  Query := fetchQuery('SELECT * '+
-                      'FROM zlec_technologie_etapy '+
-                      'WHERE id_zlec_technologie = '+ IntToStr(ID_ZLEC_TECHNOLOGIE) + ' ' +
-                      'ORDER BY nr_etapu asc');
-
-  while not Query.Eof do
-  begin
-    New(mojEtapZleceniaPtr); // nowy record
-
-    SetLength(mojeEtapyZlecenia, Length(mojeEtapyZlecenia) + 1); // zwiekszamy rozmiar tablicy
-
-    mojEtapZleceniaPtr.TPZ_M := Query.FieldByName('TPZ_M').AsInteger; // ustawianie rekordu
-    mojEtapZleceniaPtr.TJ_M := Query.FieldByName('TJ_M').AsInteger;
-    mojEtapZleceniaPtr.ID_STANOWISKA := Query.FieldByName('ID_STANOWISKA').AsInteger;
-    mojEtapZleceniaPtr.ID_RODZAJE_STANOWISK := Query.FieldByName('ID_RODZAJE_STANOWISK').AsInteger;
-
-    mojeEtapyZlecenia[Length(mojeEtapyZlecenia) - 1] := mojEtapZleceniaPtr^; // na ostatnim miejscu wrzucamy nowy rekord
-
-    Dispose(mojEtapZleceniaPtr); // pozbywamy sie pointera do utworzonego recordu
-
-    Query.Next;
-  end;
-
-  Query.Destroy;
-  Result := mojeEtapyZlecenia;
-end;
-
-function TForm1.obliczCzasEtapu(TPZ_M : Integer; TJ_M : Integer; iloscZlecenia : Integer) : Integer;
-begin
-  Result := TPZ_M + TJ_M * iloscZlecenia;
-end;
-
-procedure TForm1.zajmijStanowisko(ID_STANOWISKA : Integer; czasEtapu : Integer);
-begin
-
-end;
-
 procedure TForm1.Button1Click(Sender: TObject);
 var
   Task1 : Integer;
   Task2 : Integer;
-  SeriesGantt : TGanttSeries;
-  ChartTool : TGanttTool;
 begin
-  SeriesGantt := TGanttSeries.Create(nil);
-  SeriesGantt.LineHeight := 20;
-  ChartTool := TGanttTool.Create(nil);
-  ChartTool.AllowDrag := True;
-//  ChartTool.Series := Series1;
   Task1 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,0,0,0), EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), 0, 'raz');
+  print(IntToStr(Task1));
   Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(13,0,0,0), 0, 'raz');
   Task2 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(15,0,0,0), 1, 'dwa');
   Series1.NextTask[Task1] := Task2;
   Chart1.AddSeries(Series1);
-//  Chart1.Tools.Add(ChartTool);
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -310,6 +115,7 @@ end;
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
   ChartTool1.AllowDrag := CheckBox1.Checked;
+  Chart1.Zoom.Allow := not(CheckBox1.Checked);
 end;
 
 end.

@@ -59,6 +59,7 @@ object Form1: TForm1
     Align = alTop
     Lines.Strings = (
       'Memo1')
+    ScrollBars = ssVertical
     TabOrder = 1
   end
   object Chart1: TChart

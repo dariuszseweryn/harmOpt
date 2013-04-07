@@ -86,6 +86,10 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="DataBaseHelper.pas"/>
+        <DCCReference Include="EtapZlecenia.pas"/>
+        <DCCReference Include="QueryHelper.pas"/>
+        <DCCReference Include="EtapyZlecen.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
