@@ -28,6 +28,8 @@ type
     procedure Series1Click(Sender: TChartSeries; ValueIndex: Integer;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure CheckBox1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
 
     procedure harmonogramuj;
@@ -53,9 +55,8 @@ var
   etapyZlecen : TEtapyZlecen;
   etapZlecenia : TEtapZlecenia;
 begin
-  DBH := TDataBaseHelper.HelperWithConnection(ADOConnection1);
   etapyZlecen := DBH.wyciagnijEtapyZlecenDoHarmonogramowania;
-  for etapZlecenia in etapyZlecen.ArrayEZ do
+  for etapZlecenia in etapyZlecen.Etapy do
   begin
     print('ID_ZLECENIA ' + IntToStr(etapZlecenia.ID_ZLECENIA) + ' ' +
           'ID_ZLEC_TECHNOLOGIE ' + IntToStr(etapZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
@@ -66,6 +67,7 @@ begin
           'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
           'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK));
   end;
+  etapyZlecen.Free;
 end;
 
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
@@ -116,6 +118,16 @@ procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
   ChartTool1.AllowDrag := CheckBox1.Checked;
   Chart1.Zoom.Allow := not(CheckBox1.Checked);
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  DBH := TDataBaseHelper.HelperWithConnection(ADOConnection1);
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  DBH.Free;
 end;
 
 end.
