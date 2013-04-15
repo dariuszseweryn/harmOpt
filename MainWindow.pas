@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB,
   Bde.DBTables, Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, VCLTee.TeEngine,
   VCLTee.Series, VCLTee.GanttCh, VCLTee.TeeGanttTool, VCLTee.TeeProcs,
-  VCLTee.Chart, DataBaseHelper, EtapyZlecen, EtapZlecenia;
+  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, EtapZlecenia, Harmonogramator;
 
 type
   TForm1 = class(TForm)
@@ -52,22 +52,32 @@ implementation
 
 procedure TForm1.harmonogramuj;
 var
-  etapyZlecen : TEtapyZlecen;
+  zlecenia : TZlecenia;
+  zlecenie : TZlecenie;
   etapZlecenia : TEtapZlecenia;
 begin
-  etapyZlecen := DBH.wyciagnijEtapyZlecenDoHarmonogramowania;
-  for etapZlecenia in etapyZlecen.Etapy do
+  zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
+  for zlecenie in zlecenia.listaZlecen do
   begin
-    print('ID_ZLECENIA ' + IntToStr(etapZlecenia.ID_ZLECENIA) + ' ' +
-          'ID_ZLEC_TECHNOLOGIE ' + IntToStr(etapZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
-          'ILOSC_ZLECONA ' + IntToStr(etapZlecenia.ILOSC_ZLECONA) + ' ' +
-          'NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU) + ' ' +
-          'TPZ_M ' + IntToStr(etapZlecenia.TPZ_M) + ' ' +
-          'TJ_M ' + IntToStr(etapZlecenia.TJ_M) + ' ' +
-          'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
-          'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK));
+    print('zlecenie' + #13#10);
+    for etapZlecenia in zlecenie.listaEtapow do
+    begin
+      if not (etapZlecenia.poprzedniEtap = nil) then
+        print('poprzedniEtap->NR_ETAPU ' + IntToStr(etapZlecenia.poprzedniEtap.NR_ETAPU));
+      if not (etapZlecenia.nastepnyEtap = nil) then
+        print('nastepnyEtap->NR_ETAPU ' + IntToStr(etapZlecenia.nastepnyEtap.NR_ETAPU));
+
+      print('ID_ZLECENIA ' + IntToStr(etapZlecenia.ID_ZLECENIA) + ' ' +
+            'ID_ZLEC_TECHNOLOGIE ' + IntToStr(etapZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
+            'ILOSC_ZLECONA ' + IntToStr(etapZlecenia.ILOSC_ZLECONA) + ' ' +
+            'NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU) + ' ' +
+            'TPZ_M ' + IntToStr(etapZlecenia.TPZ_M) + ' ' +
+            'TJ_M ' + IntToStr(etapZlecenia.TJ_M) + ' ' +
+            'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
+            'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK));
+    end;
   end;
-  etapyZlecen.Free;
+  zlecenia.Free;
 end;
 
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;

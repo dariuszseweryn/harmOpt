@@ -24,10 +24,14 @@ type
   DATA_START : Integer;
   DATA_KONIEC : Integer;
   // info nt. kolejnosci dodania do wykresu Gantta
-  GanttID : Integer;
+  ganttID : Integer;
+  // poprzedni, nastepny etap
+  poprzedniEtap : TEtapZlecenia;
+  nastepnyEtap : TEtapZlecenia;
 
-  procedure ustawDlaQueryZeZlecenia(query : TADOQuery);
-  procedure ustawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
+
+  procedure UstawDlaQueryZeZlecenia(query : TADOQuery);
+  procedure UstawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
 
   end;
 
@@ -36,14 +40,14 @@ var
 
 implementation
 
-  procedure TEtapZlecenia.ustawDlaQueryZeZlecenia(query : TADOQuery);
+  procedure TEtapZlecenia.UstawDlaQueryZeZlecenia(query : TADOQuery);
   begin
     ID_ZLECENIA := query.FieldByName('ID_ZLECENIA').AsInteger;
     ID_ZLEC_TECHNOLOGIE := query.FieldByName('ID_ZLEC_TECHNOLOGIE').AsInteger;
     ILOSC_ZLECONA := query.FieldByName('ILOSC_ZLECONA').AsInteger;
   end;
 
-  procedure TEtapZlecenia.ustawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
+  procedure TEtapZlecenia.UstawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
   begin
     NR_ETAPU := query.FieldByName('NR_ETAPU').AsInteger;
     TPZ_M := query.FieldByName('TPZ_M').AsInteger;

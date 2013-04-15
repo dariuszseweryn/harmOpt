@@ -4,17 +4,22 @@ program Project1;
 
 uses
   Vcl.Forms,
-  MainWindow in 'MainWindow.pas' {Form1},
   DataBaseHelper in 'DataBaseHelper.pas',
   EtapZlecenia in 'EtapZlecenia.pas',
+  Harmonogramator in 'Harmonogramator.pas',
+  MainWindow in 'MainWindow.pas' {Form1},
   QueryHelper in 'QueryHelper.pas',
-  EtapyZlecen in 'EtapyZlecen.pas';
+  Stanowiska in 'Stanowiska.pas',
+  Stanowisko in 'Stanowisko.pas',
+  Zlecenia in 'Zlecenia.pas',
+  Zlecenie in 'Zlecenie.pas';
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TForm1, Form1);
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.

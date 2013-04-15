@@ -3,113 +3,150 @@ unit DataBaseHelper;
 interface
 
 uses
-  System.SysUtils, Data.Win.ADODB, QueryHelper, EtapyZlecen, EtapZlecenia;
+  System.SysUtils, System.Generics.Collections, Data.Win.ADODB,
+  QueryHelper, Zlecenia, Zlecenie, EtapZlecenia, Stanowiska, Stanowisko;
 
 type
   TDataBaseHelper = class
 
   private
-    procedure przygotujBazeDoZapisaniaHarmonogramowanychEtapow;
-    procedure cofnijPrzygotowanieBazyDoZapisaniaHarmonogramowanychEtapow;
+    procedure PrzygotujBazeDoZapisaniaHarmonogramowanychEtapow;
+    procedure CofnijPrzygotowanieBazyDoZapisaniaHarmonogramowanychEtapow;
 
-    function czyKolumnaIstniejeWTabeli(nazwaKolumny, nazwaTabeli : String) : Boolean;
-    procedure dodajKolumneDoTabeli(nazwaKolumny, nazwaTabeli, typDanych : String);
-    procedure usunKolumneZTabeli(nazwaKolumny, nazwaTabeli : String);
+    function CzyKolumnaIstniejeWTabeli(nazwaKolumny, nazwaTabeli : String) : Boolean;
+    procedure DodajKolumneDoTabeli(nazwaKolumny, nazwaTabeli, typDanych : String);
+    procedure UsunKolumneZTabeli(nazwaKolumny, nazwaTabeli : String);
     { Private declarations }
   public
     { Public declarations }
     constructor HelperWithConnection(connection : TADOConnection);
     destructor Free;
 
-    function wyciagnijEtapyZlecenDoHarmonogramowania : TEtapyZlecen;
+    function WyciagnijZleceniaDoHarmonogramowania : TZlecenia;
+    function WyciagnijStanowiskaDoHarmonogramowania : TStanowiska;
 
   end;
 
 var
-  QueryZlecenia : TQueryHelper;
-  QueryEtapyZlecenia : TQueryHelper;
-  QueryMisc : TQueryHelper;
+  Query1 : TQueryHelper;
+  Query2 : TQueryHelper;
 
 implementation
 
   constructor TDataBaseHelper.HelperWithConnection(connection : TADOConnection);
   begin
-    QueryZlecenia := TQueryHelper.HelperWithConnection(connection);
-    QueryEtapyZlecenia := TQueryHelper.HelperWithConnection(connection);
-    QueryMisc := TQueryHelper.HelperWithConnection(connection);
+    Query1 := TQueryHelper.HelperWithConnection(connection);
+    Query2 := TQueryHelper.HelperWithConnection(connection);
   end;
 
   destructor TDataBaseHelper.Free;
   begin
-    QueryZlecenia.Free;
-    QueryEtapyZlecenia.Free;
-    QueryMisc.Free;
+    Query1.Free;
+    Query2.Free;
   end;
 
-  procedure TDataBaseHelper.przygotujBazeDoZapisaniaHarmonogramowanychEtapow;
+  procedure TDataBaseHelper.PrzygotujBazeDoZapisaniaHarmonogramowanychEtapow;
   begin
 
   end;
 
-  procedure TDataBaseHelper.cofnijPrzygotowanieBazyDoZapisaniaHarmonogramowanychEtapow;
+  procedure TDataBaseHelper.CofnijPrzygotowanieBazyDoZapisaniaHarmonogramowanychEtapow;
   begin
 
   end;
 
-  function TDataBaseHelper.czyKolumnaIstniejeWTabeli(nazwaKolumny, nazwaTabeli : String) : Boolean;
+  function TDataBaseHelper.CzyKolumnaIstniejeWTabeli(nazwaKolumny, nazwaTabeli : String) : Boolean;
   begin
-    QueryMisc.fetchQuery('SELECT * FROM '+ nazwaTabeli);
+    Query1.fetchQuery('SELECT * FROM '+ nazwaTabeli);
 
-    if QueryMisc.Query.FieldList.Find(nazwaKolumny) = nil
+    if Query1.Query.FieldList.Find(nazwaKolumny) = nil
     then Result := False
     else Result := True;
   end;
 
-  procedure TDataBaseHelper.dodajKolumneDoTabeli(nazwaKolumny, nazwaTabeli, typDanych : String);
+  procedure TDataBaseHelper.DodajKolumneDoTabeli(nazwaKolumny, nazwaTabeli, typDanych : String);
   begin
-    QueryMisc.executeQuery('ALTER TABLE '+ nazwaTabeli + ' '+
+    Query1.executeQuery('ALTER TABLE '+ nazwaTabeli + ' '+
                            'ADD '+ nazwaKolumny + ' ' + typDanych);
   end;
 
-  procedure TDataBaseHelper.usunKolumneZTabeli(nazwaKolumny, nazwaTabeli : String);
+  procedure TDataBaseHelper.UsunKolumneZTabeli(nazwaKolumny, nazwaTabeli : String);
   begin
-    QueryMisc.executeQuery('ALTER TABLE '+ nazwaTabeli + ' '+
+    Query1.executeQuery('ALTER TABLE '+ nazwaTabeli + ' '+
                            'DROP COLUMN '+ nazwaKolumny);
   end;
 
-  function TDataBaseHelper.wyciagnijEtapyZlecenDoHarmonogramowania : TEtapyZlecen;
+  function TDataBaseHelper.WyciagnijZleceniaDoHarmonogramowania : TZlecenia;
   var
-    etapyZlecen : TEtapyZlecen;
+    zlecenia : TZlecenia;
+    zlecenie : TZlecenie;
     etapZlecenia : TEtapZlecenia;
     ID_ZLEC_TECHNOLOGIE : Integer;
+    poprzedniEtapZlecenia : TEtapZlecenia;
   begin
-    etapyZlecen := TEtapyZlecen.Create;
-    QueryZlecenia.fetchQuery('SELECT * '+
+    zlecenia := TZlecenia.Create;
+    Query1.fetchQuery('SELECT * '+
                              'FROM zlecenia '+
                              'WHERE status = ''wystawione'' '+
                              'ORDER BY rok asc, miesiac asc');
 
-    while not QueryZlecenia.Query.Eof do
+    while not Query1.Query.Eof do
     begin
-      ID_ZLEC_TECHNOLOGIE := QueryZlecenia.Query.FieldByName('ID_ZLEC_TECHNOLOGIE').AsInteger;
-      QueryEtapyZlecenia.fetchQuery('SELECT * '+
+      zlecenie := TZlecenie.Create;
+      zlecenia.dodajZlecenie(zlecenie);
+      poprzedniEtapZlecenia := nil;
+      ID_ZLEC_TECHNOLOGIE := Query1.Query.FieldByName('ID_ZLEC_TECHNOLOGIE').AsInteger;
+      Query2.fetchQuery('SELECT * '+
                                     'FROM zlec_technologie_etapy '+
                                     'WHERE id_zlec_technologie = '+ IntToStr(ID_ZLEC_TECHNOLOGIE) + ' ' +
                                     'ORDER BY nr_etapu asc');
 
-      while not QueryEtapyZlecenia.Query.Eof do
+      while not Query2.Query.Eof do
       begin
         etapZlecenia := TEtapZlecenia.Create;
-        etapZlecenia.ustawDlaQueryZeZlecenia(QueryZlecenia.Query);
-        etapZlecenia.ustawDlaQueryZeZlecTechnologieEtapy(QueryEtapyZlecenia.Query);
+        etapZlecenia.UstawDlaQueryZeZlecenia(Query1.Query);
+        etapZlecenia.UstawDlaQueryZeZlecTechnologieEtapy(Query2.Query);
 
-        etapyZlecen.dodajEtap(etapZlecenia);
-        QueryEtapyZlecenia.Query.Next;
+        if not (poprzedniEtapZlecenia = nil) then
+        begin
+          etapZlecenia.poprzedniEtap := poprzedniEtapZlecenia;
+          poprzedniEtapZlecenia.nastepnyEtap := etapZlecenia;
+        end;
+
+        zlecenie.dodajEtap(etapZlecenia);
+        poprzedniEtapZlecenia := etapZlecenia;
+        Query2.Query.Next;
       end;
 
-      QueryZlecenia.Query.Next;
+      Query1.Query.Next;
     end;
-    Result := etapyZlecen;
+    Result := zlecenia;
+  end;
+
+  function TDataBaseHelper.WyciagnijStanowiskaDoHarmonogramowania : TStanowiska;
+  var
+    stanowiska : TStanowiska;
+    stanowisko : TStanowisko;
+    ID_RODZAJE_STANOWISK : Integer;
+  begin
+    stanowiska := TStanowiska.Create;
+    Query1.fetchQuery('SELECT * FROM stanowiska');
+
+    while not Query1.Query.Eof do
+    begin
+      stanowisko := TStanowisko.Create;
+      stanowiska.DodajStanowisko(stanowisko);
+
+      ID_RODZAJE_STANOWISK := Query1.Query.FieldByName('ID_RODZAJE_STANOWISK').AsInteger;
+      Query2.fetchQuery('SELECT * FROM rodzaje_stanowisk '+
+                        'WHERE id_zlec_technologie = '+ IntToStr(ID_RODZAJE_STANOWISK));
+
+      stanowisko.UstawDlaQueryZeStanowiska(Query1.Query);
+      stanowisko.UstawDlaQueryZRodzajeStanowisk(Query2.Query);
+
+      Query1.Query.Next;
+    end;
+    Result := stanowiska;
   end;
 
 end.
