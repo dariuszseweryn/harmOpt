@@ -83,7 +83,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="DataBaseHelper.pas"/>
-        <DCCReference Include="EtapZlecenia.pas"/>
+        <DCCReference Include="ZlecenieEtap.pas"/>
         <DCCReference Include="Harmonogramator.pas"/>
         <DCCReference Include="MainWindow.pas">
             <Form>Form1</Form>
@@ -93,6 +93,7 @@
         <DCCReference Include="Stanowisko.pas"/>
         <DCCReference Include="Zlecenia.pas"/>
         <DCCReference Include="Zlecenie.pas"/>
+        <DCCReference Include="ZlecenieDane.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

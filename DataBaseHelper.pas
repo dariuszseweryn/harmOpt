@@ -4,7 +4,7 @@ interface
 
 uses
   System.SysUtils, System.Generics.Collections, Data.Win.ADODB,
-  QueryHelper, Zlecenia, Zlecenie, EtapZlecenia, Stanowiska, Stanowisko;
+  QueryHelper, Zlecenia, Zlecenie, ZlecenieEtap, Stanowiska, Stanowisko;
 
 type
   TDataBaseHelper = class
@@ -20,7 +20,7 @@ type
   public
     { Public declarations }
     constructor HelperWithConnection(connection : TADOConnection);
-    destructor Free;
+//    destructor Free;
 
     function WyciagnijZleceniaDoHarmonogramowania : TZlecenia;
     function WyciagnijStanowiskaDoHarmonogramowania : TStanowiska;
@@ -39,11 +39,11 @@ implementation
     Query2 := TQueryHelper.HelperWithConnection(connection);
   end;
 
-  destructor TDataBaseHelper.Free;
-  begin
-    Query1.Free;
-    Query2.Free;
-  end;
+//  destructor TDataBaseHelper.Free;
+//  begin
+//    Query1.Free;
+//    Query2.Free;
+//  end;
 
   procedure TDataBaseHelper.PrzygotujBazeDoZapisaniaHarmonogramowanychEtapow;
   begin
@@ -80,11 +80,11 @@ implementation
   var
     zlecenia : TZlecenia;
     zlecenie : TZlecenie;
-    etapZlecenia : TEtapZlecenia;
+    etapZlecenia : TZlecenieEtap;
     ID_ZLEC_TECHNOLOGIE : Integer;
-    poprzedniEtapZlecenia : TEtapZlecenia;
+    poprzedniEtapZlecenia : TZlecenieEtap;
   begin
-    zlecenia := TZlecenia.Create;
+    zlecenia := TZlecenia.Create(True);
     Query1.fetchQuery('SELECT * '+
                              'FROM zlecenia '+
                              'WHERE status = ''wystawione'' '+
@@ -92,8 +92,9 @@ implementation
 
     while not Query1.Query.Eof do
     begin
-      zlecenie := TZlecenie.Create;
-      zlecenia.dodajZlecenie(zlecenie);
+      zlecenie := TZlecenie.Create(True);
+      zlecenie.daneZlecenia.UstawDlaQueryZeZlecenia(Query1.Query);
+      zlecenia.Add(zlecenie);
       poprzedniEtapZlecenia := nil;
       ID_ZLEC_TECHNOLOGIE := Query1.Query.FieldByName('ID_ZLEC_TECHNOLOGIE').AsInteger;
       Query2.fetchQuery('SELECT * '+
@@ -103,8 +104,7 @@ implementation
 
       while not Query2.Query.Eof do
       begin
-        etapZlecenia := TEtapZlecenia.Create;
-        etapZlecenia.UstawDlaQueryZeZlecenia(Query1.Query);
+        etapZlecenia := TZlecenieEtap.Create;
         etapZlecenia.UstawDlaQueryZeZlecTechnologieEtapy(Query2.Query);
 
         if not (poprzedniEtapZlecenia = nil) then
@@ -113,7 +113,7 @@ implementation
           poprzedniEtapZlecenia.nastepnyEtap := etapZlecenia;
         end;
 
-        zlecenie.dodajEtap(etapZlecenia);
+        zlecenie.Add(etapZlecenia);
         poprzedniEtapZlecenia := etapZlecenia;
         Query2.Query.Next;
       end;
@@ -129,13 +129,13 @@ implementation
     stanowisko : TStanowisko;
     ID_RODZAJE_STANOWISK : Integer;
   begin
-    stanowiska := TStanowiska.Create;
+    stanowiska := TStanowiska.Create(True);
     Query1.fetchQuery('SELECT * FROM stanowiska');
 
     while not Query1.Query.Eof do
     begin
       stanowisko := TStanowisko.Create;
-      stanowiska.DodajStanowisko(stanowisko);
+      stanowiska.Add(stanowisko);
 
       ID_RODZAJE_STANOWISK := Query1.Query.FieldByName('ID_RODZAJE_STANOWISK').AsInteger;
       Query2.fetchQuery('SELECT * FROM rodzaje_stanowisk '+

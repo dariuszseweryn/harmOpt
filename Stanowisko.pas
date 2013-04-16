@@ -3,7 +3,7 @@ unit Stanowisko;
 interface
 
 uses
-  System.Generics.Collections, Data.Win.ADODB, EtapZlecenia;
+  System.Generics.Collections, Data.Win.ADODB, ZlecenieEtap;
 
 type
   TStanowisko = class
@@ -18,12 +18,12 @@ type
       RODZ_STANOWISKA : String;
       ID_RODZAJE_STANOWISK : Integer;
 
-      listaEtapow : TObjectList<TEtapZlecenia>;
+      listaEtapow : TObjectList<TZlecenieEtap>;
 
     constructor Create;
     destructor Free;
 
-    procedure DodajEtap(etapZlecenia : TEtapZlecenia);
+    procedure DodajEtap(etapZlecenia : TZlecenieEtap);
     procedure UstawDlaQueryZRodzajeStanowisk(query : TADOQuery);
     procedure UstawDlaQueryZeStanowiska(query : TADOQuery);
   end;
@@ -32,7 +32,7 @@ implementation
 
   constructor TStanowisko.Create;
   begin
-    listaEtapow := TObjectList<TEtapZlecenia>.Create(False);
+    listaEtapow := TObjectList<TZlecenieEtap>.Create(False);
   end;
 
   destructor TStanowisko.Free;
@@ -40,7 +40,7 @@ implementation
     listaEtapow.Free;
   end;
 
-  procedure TStanowisko.DodajEtap(etapZlecenia : TEtapZlecenia);
+  procedure TStanowisko.DodajEtap(etapZlecenia : TZlecenieEtap);
   begin
     listaEtapow.Add(etapZlecenia);
   end;

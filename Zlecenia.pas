@@ -6,33 +6,18 @@ uses
   System.Generics.Collections, Zlecenie;
 
 type
-  TZlecenia = class
+  TZlecenia = class(TObjectList<TZlecenie>)
   public
-    var
-      listaZlecen : TObjectList<TZlecenie>;
 
-    constructor Create;
-    destructor Free;
-
-    procedure DodajZlecenie(zlecenie : TZlecenie);
+    function Add(const zlecenie : TZlecenie) : Integer;
   end;
 
 
 implementation
 
-  constructor TZlecenia.Create;
+  function TZlecenia.Add(const zlecenie : TZlecenie) : Integer;
   begin
-    listaZlecen := TObjectList<TZlecenie>.Create(True);
-  end;
-
-  destructor TZlecenia.Free;
-  begin
-    listaZlecen.Free;
-  end;
-
-  procedure TZlecenia.DodajZlecenie(zlecenie : TZlecenie);
-  begin
-    listaZlecen.Add(zlecenie);
+    Result := inherited Add(zlecenie);
   end;
 
 end.

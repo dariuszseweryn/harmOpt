@@ -3,36 +3,53 @@ unit Zlecenie;
 interface
 
 uses
-  System.Generics.Collections, EtapZlecenia;
+  System.Generics.Collections, Data.Win.ADODB, ZlecenieEtap, ZlecenieDane;
 
 type
-  TZlecenie = class
+  TZlecenie = class(TObjectList<TZlecenieEtap>)
+
+    private
+    var
+      poprzedniEtap : TZlecenieEtap;
 
     public
     var
-      listaEtapow : TObjectList<TEtapZlecenia>;
+      daneZlecenia : TZlecenieDane;
 
-    constructor Create;
+    constructor Create(AOwnsObjects : Boolean = True);
     destructor Free;
 
-    procedure DodajEtap(etapZlecenia : TEtapZlecenia);
+    function Add(etapZlecenia : TZlecenieEtap) : Integer;
   end;
 
 implementation
 
-  constructor TZlecenie.Create;
+  constructor TZlecenie.Create(AOwnsObjects : Boolean = True);
   begin
-    listaEtapow := TObjectList<TEtapZlecenia>.Create(True);
+    inherited Create(ownsObjects);
+    daneZlecenia := TZlecenieDane.Create;
   end;
 
   destructor TZlecenie.Free;
   begin
-    listaEtapow.Free;
+    daneZlecenia.Free;
+    inherited Free;
   end;
 
-  procedure TZlecenie.DodajEtap(etapZlecenia : TEtapZlecenia);
+  function TZlecenie.Add(etapZlecenia : TZlecenieEtap) : Integer;
   begin
-    listaEtapow.Add(etapZlecenia);
+    if not (poprzedniEtap = nil) then
+    begin
+      etapZlecenia.poprzedniEtap := poprzedniEtap;
+      poprzedniEtap.nastepnyEtap := etapZlecenia;
+    end;
+    poprzedniEtap := etapZlecenia;
+
+    etapZlecenia.daneZlecenia := daneZlecenia;
+
+    Result := inherited Add(etapZlecenia);
   end;
+
+
 
 end.

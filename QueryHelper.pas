@@ -12,7 +12,7 @@ type
     Query : TADOQuery;
 
     constructor HelperWithConnection(connection : TADOConnection);
-    destructor Free;
+//    destructor Free;
 
     function fetchQuery(sqlString : String) : TADOQuery;
     procedure executeQuery(sqlString : String);
@@ -22,15 +22,15 @@ implementation
 
   constructor TQueryHelper.HelperWithConnection(connection : TADOConnection);
   begin
-    Query := TADOQuery.Create(nil);
+    Query := TADOQuery.Create(connection);
     Query.Connection := connection;
   end;
 
-  destructor TQueryHelper.Free;
-  begin
-    if Query.Active then Query.Close;
-    Query.Free;
-  end;
+//  destructor TQueryHelper.Free;
+//  begin
+//    if Query.Active then Query.Close;
+//    Query.Free;
+//  end;
 
   function TQueryHelper.fetchQuery(sqlString : String) : TADOQuery;
   begin

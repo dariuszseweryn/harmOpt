@@ -3,7 +3,7 @@ unit Harmonogramator;
 interface
 
 uses
-  System.Generics.Collections, Stanowiska, Stanowisko, Zlecenia, Zlecenie, EtapZlecenia;
+  System.Generics.Collections, Stanowiska, Stanowisko, Zlecenia, Zlecenie, ZlecenieEtap;
 
 type
   THarmonogramator = class
@@ -20,12 +20,12 @@ implementation
   procedure THarmonogramator.Harmonogramuj(zlecenia : TZlecenia; stanowiska : TStanowiska);
   var
     zlecenie : TZlecenie;
-    etapZlecenia : TEtapZlecenia;
+    etapZlecenia : TZlecenieEtap;
     stanowisko : TStanowisko;
   begin
-    for zlecenie in zlecenia.listaZlecen do
+    for zlecenie in zlecenia do
     begin
-      for etapZlecenia in zlecenie.listaEtapow do
+      for etapZlecenia in zlecenie do
       begin
         if etapZlecenia.poprzedniEtap = nil then
         begin
