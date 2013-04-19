@@ -75,7 +75,7 @@ begin
             'TJ_M ' + IntToStr(etapZlecenia.TJ_M) + ' ' +
             'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
             'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK) + ' ' +
-            'czas trwania ' + IntToStr(etapZlecenia.TPZ_M + etapZlecenia.TJ_M * etapZlecenia.daneZlecenia.ILOSC_ZLECONA));
+            'czas trwania ' + IntToStr(etapZlecenia.CzasWykonaniaNetto));
     end;
   end;
   zlecenia.Free;
@@ -102,6 +102,7 @@ begin
   Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(13,0,0,0), 0, 'raz');
   Task2 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(15,0,0,0), 1, 'dwa');
   Series1.NextTask[Task1] := Task2;
+  Series1.AddGantt(Now, Now + EncodeTime(0,30,0,0), 1, 'dwa');
   Chart1.AddSeries(Series1);
 end;
 

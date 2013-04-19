@@ -27,6 +27,7 @@ type
   daneZlecenia : TZlecenieDane;
 
   procedure UstawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
+  function CzasWykonaniaNetto : Integer;
 
   end;
 
@@ -39,6 +40,11 @@ implementation
     TJ_M := query.FieldByName('TJ_M').AsInteger;
     ID_STANOWISKA := query.FieldByName('ID_STANOWISKA').AsInteger;
     ID_RODZAJE_STANOWISK := query.FieldByName('ID_RODZAJE_STANOWISK').AsInteger;
+  end;
+
+  function TZlecenieEtap.CzasWykonaniaNetto : Integer;
+  begin
+    Result := TPZ_M + TJ_M * daneZlecenia.ILOSC_ZLECONA;
   end;
 
 end.
