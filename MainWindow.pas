@@ -59,22 +59,23 @@ begin
   zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
   for zlecenie in zlecenia do
   begin
-    print('zlecenie' + #13#10);
+    print(#13#10 + '====== zlecenie ======');
+    print('ID_ZLECENIA ' + IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA) + ' ' +
+          'ID_ZLEC_TECHNOLOGIE ' + IntToStr(zlecenie.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
+          'ILOSC_ZLECONA ' + IntToStr(zlecenie.daneZlecenia.ILOSC_ZLECONA) + #13#10 +
+          'PLAN_DATA_ROZPOCZECIA ' + DateToStr(zlecenie.daneZlecenia.PLAN_DATA_ROZPOCZECIA) + ' ' +
+          TimeToStr(zlecenie.daneZlecenia.PLAN_DATA_ROZPOCZECIA) + ' ' +
+          'PLAN_TERMIN_REALIZACJI ' + DateToStr(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI) + ' ' +
+          TimeToStr(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI));
+    print('====== etapy ======');
     for etapZlecenia in zlecenie do
     begin
-      if not (etapZlecenia.poprzedniEtap = nil) then
-        print('poprzedniEtap->NR_ETAPU ' + IntToStr(etapZlecenia.poprzedniEtap.NR_ETAPU));
-      if not (etapZlecenia.nastepnyEtap = nil) then
-        print('nastepnyEtap->NR_ETAPU ' + IntToStr(etapZlecenia.nastepnyEtap.NR_ETAPU));
-
-      print('ID_ZLECENIA ' + IntToStr(etapZlecenia.daneZlecenia.ID_ZLECENIA) + ' ' +
-            'ID_ZLEC_TECHNOLOGIE ' + IntToStr(etapZlecenia.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
-            'ILOSC_ZLECONA ' + IntToStr(etapZlecenia.daneZlecenia.ILOSC_ZLECONA) + ' ' +
-            'NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU) + ' ' +
+      print('NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU) + ' ' +
             'TPZ_M ' + IntToStr(etapZlecenia.TPZ_M) + ' ' +
             'TJ_M ' + IntToStr(etapZlecenia.TJ_M) + ' ' +
             'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
-            'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK));
+            'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK) + ' ' +
+            'czas trwania ' + IntToStr(etapZlecenia.TPZ_M + etapZlecenia.TJ_M * etapZlecenia.daneZlecenia.ILOSC_ZLECONA));
     end;
   end;
   zlecenia.Free;
