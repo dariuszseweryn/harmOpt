@@ -17,8 +17,8 @@ type
   ID_STANOWISKA : Integer;
   ID_RODZAJE_STANOWISK : Integer;
   // info nt. czasu zajecia stanowiska
-  DATA_START : Integer;
-  DATA_KONIEC : Integer;
+  DATA_START : TDateTime;
+  DATA_KONIEC : TDateTime;
   // info nt. kolejnosci dodania do wykresu Gantta
   ganttID : Integer;
   // poprzedni, nastepny etap, zlecenie

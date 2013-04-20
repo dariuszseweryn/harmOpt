@@ -13,7 +13,8 @@ uses
   Stanowisko in 'Stanowisko.pas',
   Zlecenia in 'Zlecenia.pas',
   Zlecenie in 'Zlecenie.pas',
-  ZlecenieDane in 'ZlecenieDane.pas';
+  ZlecenieDane in 'ZlecenieDane.pas',
+  CzasHelper in 'CzasHelper.pas';
 
 {$R *.res}
 

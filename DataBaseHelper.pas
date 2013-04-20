@@ -19,7 +19,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    constructor HelperWithConnection(connection : TADOConnection);
+    constructor Create(connection : TADOConnection);
 //    destructor Free;
 
     function WyciagnijZleceniaDoHarmonogramowania : TZlecenia;
@@ -33,7 +33,7 @@ var
 
 implementation
 
-  constructor TDataBaseHelper.HelperWithConnection(connection : TADOConnection);
+  constructor TDataBaseHelper.Create(connection : TADOConnection);
   begin
     Query1 := TQueryHelper.HelperWithConnection(connection);
     Query2 := TQueryHelper.HelperWithConnection(connection);

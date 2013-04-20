@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB,
   Bde.DBTables, Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, VCLTee.TeEngine,
   VCLTee.Series, VCLTee.GanttCh, VCLTee.TeeGanttTool, VCLTee.TeeProcs,
-  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator;
+  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper;
 
 type
   TForm1 = class(TForm)
@@ -44,6 +44,7 @@ type
 var
   Form1 : TForm1;
   DBH : TDataBaseHelper;
+  CH : TCzasHelper;
   LastDraggedBarNumber : Integer = -1;
 
 implementation
@@ -63,10 +64,8 @@ begin
     print('ID_ZLECENIA ' + IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA) + ' ' +
           'ID_ZLEC_TECHNOLOGIE ' + IntToStr(zlecenie.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
           'ILOSC_ZLECONA ' + IntToStr(zlecenie.daneZlecenia.ILOSC_ZLECONA) + #13#10 +
-          'PLAN_DATA_ROZPOCZECIA ' + DateToStr(zlecenie.daneZlecenia.PLAN_DATA_ROZPOCZECIA) + ' ' +
-          TimeToStr(zlecenie.daneZlecenia.PLAN_DATA_ROZPOCZECIA) + ' ' +
-          'PLAN_TERMIN_REALIZACJI ' + DateToStr(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI) + ' ' +
-          TimeToStr(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI));
+          'PLAN_DATA_ROZPOCZECIA ' + DateTimeToStr(zlecenie.daneZlecenia.PLAN_DATA_ROZPOCZECIA) + ' ' +
+          'PLAN_TERMIN_REALIZACJI ' + DateTimeToStr(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI));
     print('====== etapy ======');
     for etapZlecenia in zlecenie do
     begin
@@ -96,14 +95,21 @@ procedure TForm1.Button1Click(Sender: TObject);
 var
   Task1 : Integer;
   Task2 : Integer;
+  data1 : TDateTime;
+  data2 : TDateTime;
 begin
-  Task1 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,0,0,0), EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), 0, 'raz');
-  print(IntToStr(Task1));
-  Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(13,0,0,0), 0, 'raz');
-  Task2 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(15,0,0,0), 1, 'dwa');
-  Series1.NextTask[Task1] := Task2;
-  Series1.AddGantt(Now, Now + EncodeTime(0,30,0,0), 1, 'dwa');
-  Chart1.AddSeries(Series1);
+//  Task1 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,0,0,0), EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), 0, 'raz');
+//  print(IntToStr(Task1));
+//  Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(13,0,0,0), 0, 'raz');
+//  Task2 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(15,0,0,0), 1, 'dwa');
+//  Series1.NextTask[Task1] := Task2;
+//  Chart1.AddSeries(Series1);
+  data1 := EncodeDate(2013,4,19) + EncodeTime(8,0,0,0);
+  print(DateTimeToStr(data1));
+  data2 := CH.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(data1, 961);
+  print(DateTimeToStr(data2));
+  data1 := CH.DataCzasRozpoczeciaDlaDatyCzasuZakonczeniaICzasuTrwania(data2, 961);
+  print(DateTimeToStr(data1));
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -134,7 +140,8 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  DBH := TDataBaseHelper.HelperWithConnection(ADOConnection1);
+  DBH := TDataBaseHelper.Create(ADOConnection1);
+  CH := TCzasHelper.Create(EncodeTime(8,0,0,0),EncodeTime(16,0,0,0));
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
