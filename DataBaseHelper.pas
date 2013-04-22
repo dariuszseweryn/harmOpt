@@ -88,6 +88,7 @@ implementation
     Query1.fetchQuery('SELECT * '+
                              'FROM zlecenia '+
                              'WHERE status = ''wystawione'' '+
+//                             'AND ID_ZLEC_TECHNOLOGIE = 53 ' +
                              'ORDER BY rok asc, miesiac asc');
 
     while not Query1.Query.Eof do
@@ -139,7 +140,7 @@ implementation
 
       ID_RODZAJE_STANOWISK := Query1.Query.FieldByName('ID_RODZAJE_STANOWISK').AsInteger;
       Query2.fetchQuery('SELECT * FROM rodzaje_stanowisk '+
-                        'WHERE id_zlec_technologie = '+ IntToStr(ID_RODZAJE_STANOWISK));
+                        'WHERE id_rodzaje_stanowisk = '+ IntToStr(ID_RODZAJE_STANOWISK));
 
       stanowisko.UstawDlaQueryZeStanowiska(Query1.Query);
       stanowisko.UstawDlaQueryZRodzajeStanowisk(Query2.Query);

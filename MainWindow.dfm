@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   Caption = 'Form1'
   ClientHeight = 799
-  ClientWidth = 919
+  ClientWidth = 916
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,11 +19,12 @@ object Form1: TForm1
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 913
+    Width = 910
     Height = 97
     Align = alTop
     Caption = 'Connection Configuration'
     TabOrder = 0
+    ExplicitWidth = 913
     object Button1: TButton
       Left = 16
       Top = 23
@@ -56,20 +57,21 @@ object Form1: TForm1
     AlignWithMargins = True
     Left = 3
     Top = 106
-    Width = 913
-    Height = 367
+    Width = 910
+    Height = 111
     Align = alTop
     Lines.Strings = (
       'Memo1')
     ScrollBars = ssVertical
     TabOrder = 1
+    ExplicitWidth = 913
   end
   object Chart1: TChart
     AlignWithMargins = True
     Left = 3
-    Top = 479
-    Width = 913
-    Height = 302
+    Top = 223
+    Width = 910
+    Height = 562
     BackWall.Brush.Gradient.Direction = gdBottomTop
     BackWall.Brush.Gradient.EndColor = clWhite
     BackWall.Brush.Gradient.StartColor = 15395562
@@ -83,6 +85,7 @@ object Form1: TForm1
     Gradient.Visible = True
     LeftWall.Color = 14745599
     Legend.Font.Name = 'Verdana'
+    Legend.Visible = False
     RightWall.Color = 14745599
     SubFoot.Font.Name = 'Verdana'
     SubTitle.Font.Name = 'Verdana'
@@ -122,6 +125,7 @@ object Form1: TForm1
     Align = alTop
     TabOrder = 2
     OnMouseUp = Chart1MouseUp
+    ExplicitWidth = 913
     PrintMargins = (
       15
       33
@@ -136,18 +140,18 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 9300723
-      Pointer.Gradient.EndColor = 9300723
+      Pointer.Brush.Gradient.EndColor = 10401629
+      Pointer.Gradient.EndColor = 10401629
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15
       Pointer.Visible = True
       XValues.Name = 'Start'
-      XValues.Order = loAscending
+      XValues.Order = loNone
       YValues.Name = 'Y'
       YValues.Order = loNone
       StartValues.Name = 'Start'
-      StartValues.Order = loAscending
+      StartValues.Order = loNone
       EndValues.Name = 'End'
       EndValues.Order = loNone
       NextTask.Name = 'NextTask'

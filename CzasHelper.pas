@@ -34,7 +34,7 @@ implementation
 
   function TCzasHelper.PozaGodzinamiPracy(dataCzas : TDateTime) : Boolean;
   begin
-    Result := (HourOf(dataCzas) > HourOf(czasKoncaPracy)) or (HourOf(dataCzas) < HourOf(czasRozpoczeciaPracy));
+    Result := (TimeOf(dataCzas) > TimeOf(czasKoncaPracy)) or (TimeOf(dataCzas) < TimeOf(czasRozpoczeciaPracy));
   end;
 
   function TCzasHelper.TrwaPowyzejJednegoDniaRoboczego(czasWMinutach : Integer) : Boolean;
@@ -132,9 +132,9 @@ implementation
     else zmianaDnia := -1;
 
     tempDataCzas := DateOf(dataCzas);
-    Result := HourOf(dataCzas);
+    Result := TimeOf(dataCzas);
 
-    if HourOf(dataCzas) < czasRozpoczeciaPracy then
+    if TimeOf(dataCzas) < czasRozpoczeciaPracy then
     begin
       if pozniejsza then
       begin
@@ -146,7 +146,7 @@ implementation
         tempDataCzas := IncDay(tempDataCzas, -1);
       end;
     end
-    else if HourOf(dataCzas) > czasKoncaPracy then
+    else if TimeOf(dataCzas) > czasKoncaPracy then
     begin
       if pozniejsza then
       begin

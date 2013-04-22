@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB,
   Bde.DBTables, Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, VCLTee.TeEngine,
   VCLTee.Series, VCLTee.GanttCh, VCLTee.TeeGanttTool, VCLTee.TeeProcs,
-  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper;
+  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper, Stanowiska, Stanowisko;
 
 type
   TForm1 = class(TForm)
@@ -32,6 +32,9 @@ type
     procedure FormDestroy(Sender: TObject);
   private
 
+    zlecenia : TZlecenia;
+    stanowiska : TStanowiska;
+
     procedure harmonogramuj;
 
     //helpery
@@ -45,6 +48,7 @@ var
   Form1 : TForm1;
   DBH : TDataBaseHelper;
   CH : TCzasHelper;
+  Harmonogramator : THarmonogramator;
   LastDraggedBarNumber : Integer = -1;
 
 implementation
@@ -53,11 +57,21 @@ implementation
 
 procedure TForm1.harmonogramuj;
 var
-  zlecenia : TZlecenia;
   zlecenie : TZlecenie;
   etapZlecenia : TZlecenieEtap;
+  stanowisko : TStanowisko;
 begin
+  if not (zlecenia = nil) then
+  begin
+    zlecenia.Free;
+    stanowiska.Free;
+  end;
+
   zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
+  stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
+
+  Harmonogramator.Harmonogramuj(zlecenia, stanowiska);
+
   for zlecenie in zlecenia do
   begin
     print(#13#10 + '====== zlecenie ======');
@@ -77,13 +91,44 @@ begin
             'czas trwania ' + IntToStr(etapZlecenia.CzasWykonaniaNetto));
     end;
   end;
-  zlecenia.Free;
+
+  for stanowisko in stanowiska do
+  begin
+    for etapZlecenia in stanowisko.listaEtapow do
+    begin
+      etapZlecenia.ganttID := Series1.AddGanttColor(etapZlecenia.DATA_START, etapZlecenia.DATA_KONIEC, stanowiska.IndexOf(stanowisko), stanowisko.NAZ_STANOWISKA, clRed);
+    end;
+  end;
+
+  for zlecenie in zlecenia do
+  begin
+    for etapZlecenia in zlecenie do
+    begin
+      if not (etapZlecenia.poprzedniEtap = nil) then
+        Series1.NextTask[etapZlecenia.poprzedniEtap.ganttID] := etapZlecenia.ganttID;
+    end;
+  end;
+
+
 end;
 
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  zlecenie : TZlecenie;
+  etapZlecenia : TZlecenieEtap;
+  I : Integer;
 begin
-Memo1.Text := 'clicked ' + IntToStr(ValueIndex);
+  Memo1.Text := 'clicked ' + IntToStr(ValueIndex);
+  for zlecenie in zlecenia do
+  begin
+    for etapZlecenia in zlecenie do
+      if etapZlecenia.ganttID = ValueIndex then
+      begin
+        I := 1;
+      end;
+  end;
+
 end;
 
 procedure TForm1.print(printString : String);
@@ -142,10 +187,17 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   DBH := TDataBaseHelper.Create(ADOConnection1);
   CH := TCzasHelper.Create(EncodeTime(8,0,0,0),EncodeTime(16,0,0,0));
+  Harmonogramator := THarmonogramator.Create;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+//  if not (DBH = nil) then DBH.Free;
+//  if not (CH = nil) then CH.Free;
+//  if not (zlecenia = nil) then zlecenia.Free;
+//  if not (stanowiska = nil) then stanowiska.Free;
+//  if not (Harmonogramator = nil) then Harmonogramator.Free;
+
 //  DBH.Free;
 end;
 

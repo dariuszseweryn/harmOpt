@@ -7,6 +7,7 @@ uses
 
 type
   TStanowisko = class
+    private
 
     public
     var
@@ -26,6 +27,9 @@ type
     procedure DodajEtap(etapZlecenia : TZlecenieEtap);
     procedure UstawDlaQueryZRodzajeStanowisk(query : TADOQuery);
     procedure UstawDlaQueryZeStanowiska(query : TADOQuery);
+
+    function PotencjalnaDataCzasRozpoczeciaEtapu(potencjalnyStart,
+      potencjalnyKoniec : TDateTime) : TDateTime;
   end;
 
 implementation
@@ -57,6 +61,33 @@ implementation
     NAZ_STANOWISKA := query.FieldByName('NAZ_STANOWISKA').AsString;
     KOD_STANOWISKA := query.FieldByName('KOD_STANOWISKA').AsString;
     ID_STANOWISKA := query.FieldByName('ID_STANOWISKA').AsInteger;
+  end;
+
+  // zwraca ta sama date jesli wolne w szukanym okresie czasu.
+  // jesli zajete w tym czasie, zwraca potencjalna date kiedy moze byc wolne.
+  function TStanowisko.PotencjalnaDataCzasRozpoczeciaEtapu(potencjalnyStart,
+    potencjalnyKoniec : TDateTime) : TDateTime;
+  var
+    listaEtapowPomiedzy : TObjectList<TZlecenieEtap>;
+    etapZlecenia : TZlecenieEtap;
+  begin
+    listaEtapowPomiedzy := TObjectList<TZlecenieEtap>.Create(False);
+
+    for etapZlecenia in listaEtapow do
+    begin
+      if ((etapZlecenia.DATA_START >= potencjalnyStart) and (etapZlecenia.DATA_START <= potencjalnyKoniec)) or
+        ((etapZlecenia.DATA_KONIEC >= potencjalnyStart) and (etapZlecenia.DATA_KONIEC <= potencjalnyKoniec)) or
+        ((etapZlecenia.DATA_START <= potencjalnyStart) and (etapZlecenia.DATA_KONIEC >= potencjalnyKoniec)) then
+          listaEtapowPomiedzy.Add(etapZlecenia);
+    end;
+
+    Result := potencjalnyStart;
+
+    for etapZlecenia in listaEtapowPomiedzy do
+    begin
+      if etapZlecenia.DATA_KONIEC > Result then Result := etapZlecenia.DATA_KONIEC;
+    end;
+
   end;
 
 end.
