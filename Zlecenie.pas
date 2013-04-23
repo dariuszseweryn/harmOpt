@@ -3,7 +3,7 @@ unit Zlecenie;
 interface
 
 uses
-  System.Generics.Collections, Data.Win.ADODB, ZlecenieEtap, ZlecenieDane;
+  System.Generics.Collections, Data.Win.ADODB, VCLTee.GanttCh, ZlecenieEtap, ZlecenieDane;
 
 type
   TZlecenie = class(TObjectList<TZlecenieEtap>)
@@ -20,6 +20,7 @@ type
     destructor Free;
 
     function Add(etapZlecenia : TZlecenieEtap) : Integer;
+    procedure PolaczKolejneEtapyZleceniaWSerii(seria : TGanttSeries);
   end;
 
 implementation
@@ -50,6 +51,13 @@ implementation
     Result := inherited Add(etapZlecenia);
   end;
 
-
+  procedure TZlecenie.PolaczKolejneEtapyZleceniaWSerii(seria : TGanttSeries);
+  var
+    etapZlecenia : TZlecenieEtap;
+  begin
+    for etapZlecenia in self do
+      if not (etapZlecenia.poprzedniEtap = nil) then
+          seria.NextTask[etapZlecenia.poprzedniEtap.ganttID] := etapZlecenia.ganttID;
+  end;
 
 end.

@@ -134,30 +134,26 @@ implementation
     tempDataCzas := DateOf(dataCzas);
     Result := TimeOf(dataCzas);
 
-    if TimeOf(dataCzas) < czasRozpoczeciaPracy then
-    begin
-      if pozniejsza then
+    if pozniejsza then
       begin
-        Result := czasRozpoczeciaPracy;
+        if TimeOf(dataCzas) < czasRozpoczeciaPracy then Result := czasRozpoczeciaPracy
+        else if TimeOf(dataCzas) >= czasKoncaPracy then
+          begin
+            Result := czasRozpoczeciaPracy;
+            tempDataCzas := IncDay(tempDataCzas, 1);
+          end;
       end
-      else
+    else
       begin
-        Result := czasKoncaPracy;
-        tempDataCzas := IncDay(tempDataCzas, -1);
+        if TimeOf(dataCzas) > czasKoncaPracy then Result := czasKoncaPracy
+        else if TimeOf(dataCzas) <= czasRozpoczeciaPracy then
+          begin
+            Result := czasKoncaPracy;
+            tempDataCzas := IncDay(tempDataCzas, 1);
+          end;
       end;
-    end
-    else if TimeOf(dataCzas) > czasKoncaPracy then
-    begin
-      if pozniejsza then
-      begin
-        Result := czasRozpoczeciaPracy;
-        tempDataCzas := IncDay(tempDataCzas, 1);
-      end
-      else
-      begin
-        Result := czasKoncaPracy;
-      end;
-    end;
+
+
 
     while DzienWolny(tempDataCzas) do tempDataCzas := IncDay(tempDataCzas, zmianaDnia);
 

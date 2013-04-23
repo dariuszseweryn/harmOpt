@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB,
   Bde.DBTables, Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, VCLTee.TeEngine,
   VCLTee.Series, VCLTee.GanttCh, VCLTee.TeeGanttTool, VCLTee.TeeProcs,
-  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper, Stanowiska, Stanowisko;
+  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper, Stanowiska, Stanowisko, KolorHelper, System.DateUtils;
 
 type
   TForm1 = class(TForm)
@@ -48,6 +48,7 @@ var
   Form1 : TForm1;
   DBH : TDataBaseHelper;
   CH : TCzasHelper;
+  KH : TKolorHelper;
   Harmonogramator : THarmonogramator;
   LastDraggedBarNumber : Integer = -1;
 
@@ -60,6 +61,8 @@ var
   zlecenie : TZlecenie;
   etapZlecenia : TZlecenieEtap;
   stanowisko : TStanowisko;
+  start, stop : TDateTime;
+  h, m, s, ms : Word;
 begin
   if not (zlecenia = nil) then
   begin
@@ -70,45 +73,46 @@ begin
   zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
   stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
 
+  start := Now;
   Harmonogramator.Harmonogramuj(zlecenia, stanowiska);
+  stop := Now;
+  DecodeTime(TimeOf(stop - start),h,m,s,ms);
+  print('Czas Harmonogramowania = ' + IntToStr(h) + 'h ' + IntToStr(m) + 'm ' +
+                                      IntToStr(s) + 's ' + IntToStr(ms) + 'ms');
 
-  for zlecenie in zlecenia do
-  begin
-    print(#13#10 + '====== zlecenie ======');
-    print('ID_ZLECENIA ' + IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA) + ' ' +
-          'ID_ZLEC_TECHNOLOGIE ' + IntToStr(zlecenie.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
-          'ILOSC_ZLECONA ' + IntToStr(zlecenie.daneZlecenia.ILOSC_ZLECONA) + #13#10 +
-          'PLAN_DATA_ROZPOCZECIA ' + DateTimeToStr(zlecenie.daneZlecenia.PLAN_DATA_ROZPOCZECIA) + ' ' +
-          'PLAN_TERMIN_REALIZACJI ' + DateTimeToStr(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI));
-    print('====== etapy ======');
-    for etapZlecenia in zlecenie do
-    begin
-      print('NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU) + ' ' +
-            'TPZ_M ' + IntToStr(etapZlecenia.TPZ_M) + ' ' +
-            'TJ_M ' + IntToStr(etapZlecenia.TJ_M) + ' ' +
-            'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
-            'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK) + ' ' +
-            'czas trwania ' + IntToStr(etapZlecenia.CzasWykonaniaNetto));
-    end;
-  end;
+//  for zlecenie in zlecenia do
+//  begin
+//    print(#13#10 + '====== zlecenie ======');
+//    print('ID_ZLECENIA ' + IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA) + ' ' +
+//          'ID_ZLEC_TECHNOLOGIE ' + IntToStr(zlecenie.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
+//          'ILOSC_ZLECONA ' + IntToStr(zlecenie.daneZlecenia.ILOSC_ZLECONA) + #13#10 +
+//          'PLAN_DATA_ROZPOCZECIA ' + DateTimeToStr(zlecenie.daneZlecenia.PLAN_DATA_ROZPOCZECIA) + ' ' +
+//          'PLAN_TERMIN_REALIZACJI ' + DateTimeToStr(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI));
+//    print('====== etapy ======');
+//    for etapZlecenia in zlecenie do
+//    begin
+//      print('NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU) + ' ' +
+//            'TPZ_M ' + IntToStr(etapZlecenia.TPZ_M) + ' ' +
+//            'TJ_M ' + IntToStr(etapZlecenia.TJ_M) + ' ' +
+//            'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
+//            'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK) + ' ' +
+//            'czas trwania ' + IntToStr(etapZlecenia.CzasWykonaniaNetto));
+//    end;
+//  end;
 
   for stanowisko in stanowiska do
   begin
     for etapZlecenia in stanowisko.listaEtapow do
     begin
-      etapZlecenia.ganttID := Series1.AddGanttColor(etapZlecenia.DATA_START, etapZlecenia.DATA_KONIEC, stanowiska.IndexOf(stanowisko), stanowisko.NAZ_STANOWISKA, clRed);
+      etapZlecenia.ganttID := Series1.AddGanttColor(etapZlecenia.DATA_START,
+                                                    etapZlecenia.DATA_KONIEC,
+                                                    stanowiska.IndexOf(stanowisko),
+                                                    stanowisko.NAZ_STANOWISKA,
+                                                    KH.KolorDlaId(etapZlecenia.daneZlecenia.ID_ZLECENIA));
     end;
   end;
 
-  for zlecenie in zlecenia do
-  begin
-    for etapZlecenia in zlecenie do
-    begin
-      if not (etapZlecenia.poprzedniEtap = nil) then
-        Series1.NextTask[etapZlecenia.poprzedniEtap.ganttID] := etapZlecenia.ganttID;
-    end;
-  end;
-
+  zlecenia.PolaczKolejneEtapyZlecenWSerii(Series1);
 
 end;
 
@@ -119,16 +123,16 @@ var
   etapZlecenia : TZlecenieEtap;
   I : Integer;
 begin
-  Memo1.Text := 'clicked ' + IntToStr(ValueIndex);
+  Memo1.Text := 'clicked ' + IntToStr(ValueIndex) + #13#10;
   for zlecenie in zlecenia do
   begin
     for etapZlecenia in zlecenie do
       if etapZlecenia.ganttID = ValueIndex then
       begin
-        I := 1;
+        print('ID_ZLECENIA ' + IntToStr(etapZlecenia.daneZlecenia.ID_ZLECENIA));
+        print('NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU));
       end;
   end;
-
 end;
 
 procedure TForm1.print(printString : String);
@@ -187,6 +191,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   DBH := TDataBaseHelper.Create(ADOConnection1);
   CH := TCzasHelper.Create(EncodeTime(8,0,0,0),EncodeTime(16,0,0,0));
+  KH := TKolorHelper.Create;
   Harmonogramator := THarmonogramator.Create;
 end;
 

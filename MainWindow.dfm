@@ -24,7 +24,6 @@ object Form1: TForm1
     Align = alTop
     Caption = 'Connection Configuration'
     TabOrder = 0
-    ExplicitWidth = 913
     object Button1: TButton
       Left = 16
       Top = 23
@@ -64,7 +63,6 @@ object Form1: TForm1
       'Memo1')
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitWidth = 913
   end
   object Chart1: TChart
     AlignWithMargins = True
@@ -125,7 +123,6 @@ object Form1: TForm1
     Align = alTop
     TabOrder = 2
     OnMouseUp = Chart1MouseUp
-    ExplicitWidth = 913
     PrintMargins = (
       15
       33
@@ -140,8 +137,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 10401629
-      Pointer.Gradient.EndColor = 10401629
+      Pointer.Brush.Gradient.EndColor = 9300723
+      Pointer.Gradient.EndColor = 9300723
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15

@@ -14,7 +14,8 @@ uses
   Zlecenia in 'Zlecenia.pas',
   Zlecenie in 'Zlecenie.pas',
   ZlecenieDane in 'ZlecenieDane.pas',
-  CzasHelper in 'CzasHelper.pas';
+  CzasHelper in 'CzasHelper.pas',
+  KolorHelper in 'KolorHelper.pas';
 
 {$R *.res}
 
