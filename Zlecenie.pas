@@ -11,6 +11,7 @@ type
     private
     var
       poprzedniEtap : TZlecenieEtap;
+      nastepnyEtap : TZlecenieEtap;
 
     public
     var
@@ -19,7 +20,7 @@ type
     constructor Create(AOwnsObjects : Boolean = True);
     destructor Free;
 
-    function Add(etapZlecenia : TZlecenieEtap) : Integer;
+    function Add(etapZlecenia : TZlecenieEtap; nastepne : Boolean) : Integer;
     procedure PolaczKolejneEtapyZleceniaWSerii(seria : TGanttSeries);
   end;
 
@@ -37,14 +38,26 @@ implementation
     inherited Free;
   end;
 
-  function TZlecenie.Add(etapZlecenia : TZlecenieEtap) : Integer;
+  function TZlecenie.Add(etapZlecenia : TZlecenieEtap; nastepne : Boolean) : Integer;
   begin
-    if not (poprzedniEtap = nil) then
+    if nastepne then
     begin
-      etapZlecenia.poprzedniEtap := poprzedniEtap;
-      poprzedniEtap.nastepnyEtap := etapZlecenia;
+      if not (poprzedniEtap = nil) then
+      begin
+        etapZlecenia.poprzedniEtap := poprzedniEtap;
+        poprzedniEtap.nastepnyEtap := etapZlecenia;
+      end;
+      poprzedniEtap := etapZlecenia;
+    end
+    else
+    begin
+      if not (nastepnyEtap = nil) then
+      begin
+        etapZlecenia.nastepnyEtap := nastepnyEtap;
+        nastepnyEtap.poprzedniEtap := etapZlecenia;
+      end;
+      nastepnyEtap := etapZlecenia;
     end;
-    poprzedniEtap := etapZlecenia;
 
     etapZlecenia.daneZlecenia := daneZlecenia;
 

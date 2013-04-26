@@ -16,6 +16,7 @@ type
     constructor Create;
     destructor Free;
     procedure Harmonogramuj(zlecenia : TZlecenia; stanowiska : TStanowiska);
+    procedure HarmonogramujWstecz(zlecenia : TZlecenia; stanowiska : TStanowiska);
   end;
 
 implementation
@@ -126,9 +127,89 @@ implementation
         dataCzasPoczatku := CzasHelper.DataCzasPracujacy(dataCzasKonca, True);
         dataCzasKonca := 0;
       end;
-
     end;
+  end;
 
+  procedure THarmonogramator.HarmonogramujWstecz(zlecenia : TZlecenia; stanowiska : TStanowiska);
+  var
+    zlecenie : TZlecenie;
+    etapZlecenia : TZlecenieEtap;
+    stanowisko : TStanowisko;
+    dataCzasPoczatku, dataCzasKonca : TDateTime;
+    stanowiskaDlaEtapu : TStanowiska;
+    tmpDatyCzasyKonca, datyCzasyPoczatku, datyCzasyKonca : TList<TDateTime>;
+    I, J, czasTrwaniaEtapuMinuty : Integer;
+  begin
+    tmpDatyCzasyKonca := TList<TDateTime>.Create;
+    datyCzasyPoczatku := TList<TDateTime>.Create;
+    datyCzasyKonca := TList<TDateTime>.Create;
+
+    for zlecenie in zlecenia do
+    begin
+      dataCzasPoczatku := 0; // dowolna inna wartosc niz dataCzasKonca
+      dataCzasKonca := CzasHelper.DataCzasPracujacy(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI, False);
+
+      for etapZlecenia in zlecenie do
+      begin
+        stanowiskaDlaEtapu := stanowiska.StanowiskaPasujaceDlaEtapuZlecenia(etapZlecenia);
+        czasTrwaniaEtapuMinuty := etapZlecenia.CzasWykonaniaNetto;
+
+        // inicjalizacja list pomocniczych
+        for stanowisko in stanowiskaDlaEtapu do
+        begin
+          tmpDatyCzasyKonca.Add(dataCzasPoczatku);
+          datyCzasyPoczatku.Add(dataCzasPoczatku);
+          datyCzasyKonca.Add(dataCzasKonca);
+        end;
+
+        // jesli zawieraja tzn. ze ktores ze stanowisk znalazlo czas na wykonanie etapu
+        while not ListyZawierajaTaSamaDateNaJednymIndeksie(tmpDatyCzasyKonca, datyCzasyKonca) do
+        begin
+          I := 0;
+          for stanowisko in stanowiskaDlaEtapu do
+          begin
+            dataCzasKonca := datyCzasyKonca.Items[I];
+            dataCzasPoczatku := CzasHelper.DataCzasRozpoczeciaDlaDatyCzasuZakonczeniaICzasuTrwania(dataCzasKonca, czasTrwaniaEtapuMinuty);
+
+            tmpDatyCzasyKonca.Items[I] := dataCzasKonca;
+            datyCzasyKonca.Items[I] := stanowisko.PotencjalnaDataCzasZakonczeniaEtapu(dataCzasPoczatku, dataCzasKonca);
+            datyCzasyPoczatku.Items[I] := dataCzasPoczatku;
+
+            I := I + 1;
+          end;
+        end;
+
+        I := 0;
+        dataCzasKonca := EncodeDate(1900,1,1); // mala data
+
+        // szukamy najpozniejszej mozliwej daty zakonczenia i indeks dla dat oraz stanowiska
+        for stanowisko in stanowiskaDlaEtapu do
+        begin
+          if (tmpDatyCzasyKonca.Items[I] = datyCzasyKonca.Items[I]) and
+            (dataCzasKonca < datyCzasyKonca.Items[I]) then J := I;
+
+          I := I + 1;
+        end;
+
+        // mamy date poczatku, konca i stanowisko
+        stanowisko := stanowiskaDlaEtapu.Items[J];
+        dataCzasPoczatku := datyCzasyPoczatku.Items[J];
+        dataCzasKonca := datyCzasyKonca.Items[J];
+
+        // ustawiamy dane dla etapu i stanowiska
+        etapZlecenia.DATA_START := dataCzasPoczatku;
+        etapZlecenia.DATA_KONIEC := dataCzasKonca;
+        stanowisko.listaEtapow.Add(etapZlecenia);
+
+        stanowiskaDlaEtapu.Free;
+        tmpDatyCzasyKonca.Clear;
+        datyCzasyPoczatku.Clear;
+        datyCzasyKonca.Clear;
+
+        dataCzasKonca := CzasHelper.DataCzasPracujacy(dataCzasPoczatku, False);
+        dataCzasPoczatku := 0;
+      end;
+    end;
   end;
 
 end.

@@ -70,11 +70,12 @@ begin
     stanowiska.Free;
   end;
 
-  zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
+  zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania(False);
   stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
 
   start := Now;
-  Harmonogramator.Harmonogramuj(zlecenia, stanowiska);
+//  Harmonogramator.Harmonogramuj(zlecenia, stanowiska);
+  Harmonogramator.HarmonogramujWstecz(zlecenia, stanowiska);
   stop := Now;
   DecodeTime(TimeOf(stop - start),h,m,s,ms);
   print('Czas Harmonogramowania = ' + IntToStr(h) + 'h ' + IntToStr(m) + 'm ' +

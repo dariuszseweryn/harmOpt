@@ -22,7 +22,7 @@ type
     constructor Create(connection : TADOConnection);
 //    destructor Free;
 
-    function WyciagnijZleceniaDoHarmonogramowania : TZlecenia;
+    function WyciagnijZleceniaDoHarmonogramowania(wprzod : Boolean) : TZlecenia;
     function WyciagnijStanowiskaDoHarmonogramowania : TStanowiska;
 
   end;
@@ -76,20 +76,24 @@ implementation
                            'DROP COLUMN '+ nazwaKolumny);
   end;
 
-  function TDataBaseHelper.WyciagnijZleceniaDoHarmonogramowania : TZlecenia;
+  function TDataBaseHelper.WyciagnijZleceniaDoHarmonogramowania(wprzod : Boolean) : TZlecenia;
   var
     zlecenia : TZlecenia;
     zlecenie : TZlecenie;
     etapZlecenia : TZlecenieEtap;
     ID_ZLEC_TECHNOLOGIE : Integer;
     poprzedniEtapZlecenia : TZlecenieEtap;
+    sortowanie : String;
   begin
+    if wprzod then sortowanie := 'asc'
+    else sortowanie := 'desc';
+
     zlecenia := TZlecenia.Create(True);
     Query1.fetchQuery('SELECT * '+
                              'FROM zlecenia '+
                              'WHERE status = ''wystawione'' '+
 //                             'AND ID_ZLEC_TECHNOLOGIE = 53 ' +
-                             'ORDER BY rok asc, miesiac asc');
+                             'ORDER BY rok ' + sortowanie + ', miesiac ' + sortowanie);
 
     while not Query1.Query.Eof do
     begin
@@ -101,20 +105,20 @@ implementation
       Query2.fetchQuery('SELECT * '+
                                     'FROM zlec_technologie_etapy '+
                                     'WHERE id_zlec_technologie = '+ IntToStr(ID_ZLEC_TECHNOLOGIE) + ' ' +
-                                    'ORDER BY nr_etapu asc');
+                                    'ORDER BY nr_etapu ' + sortowanie);
 
       while not Query2.Query.Eof do
       begin
         etapZlecenia := TZlecenieEtap.Create;
         etapZlecenia.UstawDlaQueryZeZlecTechnologieEtapy(Query2.Query);
 
-        if not (poprzedniEtapZlecenia = nil) then
-        begin
-          etapZlecenia.poprzedniEtap := poprzedniEtapZlecenia;
-          poprzedniEtapZlecenia.nastepnyEtap := etapZlecenia;
-        end;
+//        if not (poprzedniEtapZlecenia = nil) then
+//        begin
+//          etapZlecenia.poprzedniEtap := poprzedniEtapZlecenia;
+//          poprzedniEtapZlecenia.nastepnyEtap := etapZlecenia;
+//        end;
 
-        zlecenie.Add(etapZlecenia);
+        zlecenie.Add(etapZlecenia, wprzod);
         poprzedniEtapZlecenia := etapZlecenia;
         Query2.Query.Next;
       end;

@@ -30,6 +30,8 @@ type
 
     function PotencjalnaDataCzasRozpoczeciaEtapu(potencjalnyStart,
       potencjalnyKoniec : TDateTime) : TDateTime;
+    function PotencjalnaDataCzasZakonczeniaEtapu(potencjalnyStart,
+      potencjalnyKoniec : TDateTime) : TDateTime;
   end;
 
 implementation
@@ -86,6 +88,31 @@ implementation
     for etapZlecenia in listaEtapowPomiedzy do
     begin
       if etapZlecenia.DATA_KONIEC > Result then Result := etapZlecenia.DATA_KONIEC;
+    end;
+
+  end;
+
+  function TStanowisko.PotencjalnaDataCzasZakonczeniaEtapu(potencjalnyStart,
+    potencjalnyKoniec : TDateTime) : TDateTime;
+  var
+    listaEtapowPomiedzy : TObjectList<TZlecenieEtap>;
+    etapZlecenia : TZlecenieEtap;
+  begin
+    listaEtapowPomiedzy := TObjectList<TZlecenieEtap>.Create(False);
+
+    for etapZlecenia in listaEtapow do
+    begin
+      if ((etapZlecenia.DATA_START >= potencjalnyStart) and (etapZlecenia.DATA_START <= potencjalnyKoniec)) or
+        ((etapZlecenia.DATA_KONIEC >= potencjalnyStart) and (etapZlecenia.DATA_KONIEC <= potencjalnyKoniec)) or
+        ((etapZlecenia.DATA_START <= potencjalnyStart) and (etapZlecenia.DATA_KONIEC >= potencjalnyKoniec)) then
+          listaEtapowPomiedzy.Add(etapZlecenia);
+    end;
+
+    Result := potencjalnyKoniec;
+
+    for etapZlecenia in listaEtapowPomiedzy do
+    begin
+      if etapZlecenia.DATA_START < Result then Result := etapZlecenia.DATA_START;
     end;
 
   end;
