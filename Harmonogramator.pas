@@ -3,27 +3,42 @@ unit Harmonogramator;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, Stanowiska, Stanowisko, Zlecenia, Zlecenie, ZlecenieEtap, CzasHelper;
+  System.SysUtils, System.Generics.Collections,
+  Stanowiska, Stanowisko, Zlecenia, Zlecenie, ZlecenieEtap, CzasHelper;
 
 type
+  TPoczatekKoniecStanowisko = class
+      dataCzasPoczatku, dataCzasKonca : TDateTime;
+      stanowisko : TStanowisko;
+    end;
+
   THarmonogramator = class
   private
-    function ListyZawierajaTaSamaDateNaJednymIndeksie(lista1, lista2 : TList<TDateTime>) : Boolean;
+    function ZnajdzDateCzasPoczatkuKonciaIStanowiskoNaWykonanie
+      (etapZlecenia : TZlecenieEtap;
+      stanowiska : TStanowiska;
+      dataCzas : TDateTime;
+      dataCzasToPoczatek : boolean) : TPoczatekKoniecStanowisko;
+    function ListyZawierajaTaSamaDateNaJednymIndeksie
+      (lista1, lista2 : TList<TDateTime>) : Boolean;
     var
       CzasHelper : TCzasHelper;
 
   public
     constructor Create;
     destructor Free;
+
     procedure Harmonogramuj(zlecenia : TZlecenia; stanowiska : TStanowiska);
-    procedure HarmonogramujWstecz(zlecenia : TZlecenia; stanowiska : TStanowiska);
+    procedure HarmonogramujWstecz
+      (zlecenia : TZlecenia; stanowiska : TStanowiska);
   end;
 
 implementation
 
   // private
 
-  function THarmonogramator.ListyZawierajaTaSamaDateNaJednymIndeksie(lista1, lista2 : TList<TDateTime>) : Boolean;
+  function THarmonogramator.ListyZawierajaTaSamaDateNaJednymIndeksie
+    (lista1, lista2 : TList<TDateTime>) : Boolean;
   var
     I : Integer;
   begin
@@ -34,6 +49,61 @@ implementation
         Result := True;
         Break;
       end;
+  end;
+
+  // jesli dataCzasToPoczatek = True to szukamy pozniejszych dat na wykonanie
+  // jesli dataCzasToPoczatek = False to szukamy wczesniejszych dat na wykonanie
+  function THarmonogramator.ZnajdzDateCzasPoczatkuKonciaIStanowiskoNaWykonanie
+    (etapZlecenia: TZlecenieEtap;
+    stanowiska: TStanowiska;
+    dataCzas : TDateTime;
+    dataCzasToPoczatek: Boolean) : TPoczatekKoniecStanowisko;
+  var
+    stanowisko : TStanowisko;
+    stanowiskaDlaEtapu : TStanowiska;
+    czasTrwaniaEtapuMinuty, I, J : Integer;
+    tmpDatyCzasy, datyCzasyPoczatku, datyCzasyKonca : TList<TDateTime>;
+    dataCzasPoczatku, dataCzasKonca : TDateTime;
+  begin
+    stanowiskaDlaEtapu := stanowiska.StanowiskaPasujaceDlaEtapuZlecenia(etapZlecenia);
+    czasTrwaniaEtapuMinuty := etapZlecenia.CzasWykonaniaNetto;
+    tmpDatyCzasy := TList<TDateTime>.Create;
+    datyCzasyPoczatku := TList<TDateTime>.Create;
+    datyCzasyKonca := TList<TDateTime>.Create;
+
+    // inicjalizacja list pomocniczych
+    if dataCzasToPoczatek then
+      for stanowisko in stanowiskaDlaEtapu do
+      begin
+        tmpDatyCzasy.Add(0);
+        datyCzasyPoczatku.Add(dataCzas);
+        datyCzasyKonca.Add(0);
+      end
+    else
+      for stanowisko in stanowiskaDlaEtapu do
+      begin
+        tmpDatyCzasy.Add(0);
+        datyCzasyPoczatku.Add(0);
+        datyCzasyKonca.Add(dataCzas);
+      end;
+
+
+    // jesli zawieraja tzn. ze ktores ze stanowisk znalazlo czas na wykonanie etapu
+    while not ListyZawierajaTaSamaDateNaJednymIndeksie(tmpDatyCzasy, datyCzasyPoczatku) do
+      begin
+        I := 0;
+        for stanowisko in stanowiskaDlaEtapu do
+        begin
+          dataCzasPoczatku := datyCzasyPoczatku.Items[I];
+          dataCzasKonca := CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(dataCzasPoczatku, czasTrwaniaEtapuMinuty);
+
+          tmpDatyCzasy.Items[I] := dataCzasPoczatku;
+          datyCzasyPoczatku.Items[I] := stanowisko.PotencjalnaDataCzasRozpoczeciaEtapu(dataCzasPoczatku, dataCzasKonca);
+          datyCzasyKonca.Items[I] := dataCzasKonca;
+
+          I := I + 1;
+        end;
+        end;
   end;
 
   // public
