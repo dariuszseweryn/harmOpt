@@ -21,6 +21,7 @@ type
 
     function Add(etapZlecenia : TZlecenieEtap) : Integer;
     procedure PolaczKolejneEtapyZleceniaWSerii(seria : TGanttSeries);
+    function ZnajdzEtapZleceniaZGanttId(ganttId : Integer) : TZlecenieEtap;
   end;
 
 implementation
@@ -58,6 +59,15 @@ implementation
     for etapZlecenia in self do
       if not (etapZlecenia.poprzedniEtap = nil) then
           seria.NextTask[etapZlecenia.poprzedniEtap.ganttID] := etapZlecenia.ganttID;
+  end;
+
+  function TZlecenie.ZnajdzEtapZleceniaZGanttId(ganttId: Integer) : TZlecenieEtap;
+  var
+    etapZlecenia : TZlecenieEtap;
+  begin
+    Result := nil;
+    for etapZlecenia in self do
+      if etapZlecenia.ganttID = ganttId then Result := etapZlecenia;
   end;
 
 end.

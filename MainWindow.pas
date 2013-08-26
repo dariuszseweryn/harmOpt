@@ -119,19 +119,30 @@ end;
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  zlecenie : TZlecenie;
-  etapZlecenia : TZlecenieEtap;
-  I : Integer;
+  kliknietyEtapZlecenia, pierwszyEtap, ostatniEtap : TZlecenieEtap;
 begin
   Memo1.Text := 'clicked ' + IntToStr(ValueIndex) + #13#10;
-  for zlecenie in zlecenia do
+  kliknietyEtapZlecenia := zlecenia.ZnajdzEtapZleceniaZGanttId(ValueIndex);
+  if not (kliknietyEtapZlecenia = nil) then
   begin
-    for etapZlecenia in zlecenie do
-      if etapZlecenia.ganttID = ValueIndex then
-      begin
-        print('ID_ZLECENIA ' + IntToStr(etapZlecenia.daneZlecenia.ID_ZLECENIA));
-        print('NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU));
-      end;
+    print('======= ZLECENIE =======');
+    print('ID_ZLECENIA ' + IntToStr(kliknietyEtapZlecenia.daneZlecenia.ID_ZLECENIA));
+    print('Rozpoczecie ' + DateTimeToStr(kliknietyEtapZlecenia.daneZlecenia.PLAN_DATA_ROZPOCZECIA));
+    print('Zakonczenie ' + DateTimeToStr(kliknietyEtapZlecenia.daneZlecenia.PLAN_TERMIN_REALIZACJI));
+    print('==== ETAP ZLECENIA =====');
+    print('NR_ETAPU ' + IntToStr(kliknietyEtapZlecenia.NR_ETAPU));
+    print('Rozpoczecie ' + DateTimeToStr(kliknietyEtapZlecenia.DATA_START));
+    print('Zakonczenie ' + DateTimeToStr(kliknietyEtapZlecenia.DATA_KONIEC));
+    print('==== PIERWSZY ETAP =====');
+    pierwszyEtap := kliknietyEtapZlecenia.PierwszyEtap;
+    print('NR_ETAPU ' + IntToStr(pierwszyEtap.NR_ETAPU));
+    print('Rozpoczecie ' + DateTimeToStr(pierwszyEtap.DATA_START));
+    print('Zakonczenie ' + DateTimeToStr(pierwszyEtap.DATA_KONIEC));
+    print('===== OSTATNI ETAP =====');
+    ostatniEtap := kliknietyEtapZlecenia.OstatniEtap;
+    print('NR_ETAPU ' + IntToStr(ostatniEtap.NR_ETAPU));
+    print('Rozpoczecie ' + DateTimeToStr(ostatniEtap.DATA_START));
+    print('Zakonczenie ' + DateTimeToStr(ostatniEtap.DATA_KONIEC));
   end;
 end;
 

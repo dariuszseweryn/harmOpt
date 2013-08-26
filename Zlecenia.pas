@@ -3,7 +3,7 @@ unit Zlecenia;
 interface
 
 uses
-  System.Generics.Collections, VCLTee.GanttCh, Zlecenie;
+  System.Generics.Collections, VCLTee.GanttCh, Zlecenie, ZlecenieEtap;
 
 type
   TZlecenia = class(TObjectList<TZlecenie>)
@@ -11,6 +11,7 @@ type
 
     function Add(const zlecenie : TZlecenie) : Integer;
     procedure PolaczKolejneEtapyZlecenWSerii(seria : TGanttSeries);
+    function ZnajdzEtapZleceniaZGanttId(ganttId : Integer) : TZlecenieEtap;
   end;
 
 
@@ -28,6 +29,18 @@ implementation
     for zlecenie in self do
     begin
       zlecenie.PolaczKolejneEtapyZleceniaWSerii(seria);
+    end;
+  end;
+
+  function TZlecenia.ZnajdzEtapZleceniaZGanttId(ganttId: Integer) : TZlecenieEtap;
+  var
+    zlecenie : TZlecenie;
+  begin
+    Result := nil;
+    for zlecenie in self do
+    begin
+      Result := zlecenie.ZnajdzEtapZleceniaZGanttId(ganttId);
+      if not (Result = nil) then break;
     end;
   end;
 

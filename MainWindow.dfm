@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 799
+  ClientHeight = 823
   ClientWidth = 916
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -57,7 +57,7 @@ object Form1: TForm1
     Left = 3
     Top = 106
     Width = 910
-    Height = 111
+    Height = 335
     Align = alTop
     Lines.Strings = (
       'Memo1')
@@ -67,9 +67,9 @@ object Form1: TForm1
   object Chart1: TChart
     AlignWithMargins = True
     Left = 3
-    Top = 223
+    Top = 447
     Width = 910
-    Height = 562
+    Height = 377
     BackWall.Brush.Gradient.Direction = gdBottomTop
     BackWall.Brush.Gradient.EndColor = clWhite
     BackWall.Brush.Gradient.StartColor = 15395562
@@ -123,6 +123,7 @@ object Form1: TForm1
     Align = alTop
     TabOrder = 2
     OnMouseUp = Chart1MouseUp
+    ExplicitTop = 448
     PrintMargins = (
       15
       33
@@ -137,8 +138,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 9300723
-      Pointer.Gradient.EndColor = 9300723
+      Pointer.Brush.Gradient.EndColor = 7028779
+      Pointer.Gradient.EndColor = 7028779
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15

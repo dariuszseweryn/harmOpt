@@ -28,6 +28,8 @@ type
 
   procedure UstawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
   function CzasWykonaniaNetto : Integer;
+  function PierwszyEtap : TZlecenieEtap;
+  function OstatniEtap : TZlecenieEtap;
 
   end;
 
@@ -49,6 +51,18 @@ implementation
     tmp := TPZ_M + TJ_M * daneZlecenia.ILOSC_ZLECONA;
     if frac(tmp) > 0 then tmp := tmp + 1;
     Result := Ceil(tmp);
+  end;
+
+  function TZlecenieEtap.PierwszyEtap;
+  begin
+    if poprzedniEtap = nil then Result := self
+    else Result := poprzedniEtap.PierwszyEtap;
+  end;
+
+  function TZlecenieEtap.OstatniEtap;
+  begin
+    if nastepnyEtap = nil then Result := self
+    else Result := nastepnyEtap.OstatniEtap;
   end;
 
 end.
