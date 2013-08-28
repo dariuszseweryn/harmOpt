@@ -22,6 +22,7 @@ type
     function Add(etapZlecenia : TZlecenieEtap) : Integer;
     procedure PolaczKolejneEtapyZleceniaWSerii(seria : TGanttSeries);
     function ZnajdzEtapZleceniaZGanttId(ganttId : Integer) : TZlecenieEtap;
+    function PierwszyNierozpoczetyEtap() : TZlecenieEtap;
   end;
 
 implementation
@@ -29,6 +30,7 @@ implementation
   constructor TZlecenie.Create(AOwnsObjects : Boolean = True);
   begin
     inherited Create(ownsObjects);
+    poprzedniEtap := nil;
     daneZlecenia := TZlecenieDane.Create;
   end;
 
@@ -68,6 +70,25 @@ implementation
     Result := nil;
     for etapZlecenia in self do
       if etapZlecenia.ganttID = ganttId then Result := etapZlecenia;
+  end;
+
+  function TZlecenie.PierwszyNierozpoczetyEtap() : TZlecenieEtap;
+  var
+    zlecenieEtapTemp : TZlecenieEtap;
+  begin
+    Result := nil;
+    zlecenieEtapTemp := nil;
+    for zlecenieEtapTemp in self do
+    begin
+      if not (zlecenieEtapTemp = nil) then
+      begin
+        if not zlecenieEtapTemp.rozpoczety then
+        begin
+          Result := zlecenieEtapTemp;
+          break;
+        end;
+      end;
+    end;
   end;
 
 end.

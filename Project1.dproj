@@ -96,6 +96,7 @@
         <DCCReference Include="ZlecenieDane.pas"/>
         <DCCReference Include="CzasHelper.pas"/>
         <DCCReference Include="KolorHelper.pas"/>
+        <DCCReference Include="Etapy.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

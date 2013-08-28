@@ -3,7 +3,7 @@ unit Zlecenia;
 interface
 
 uses
-  System.Generics.Collections, VCLTee.GanttCh, Zlecenie, ZlecenieEtap;
+  System.Generics.Collections, VCLTee.GanttCh, Zlecenie, ZlecenieEtap, Etapy;
 
 type
   TZlecenia = class(TObjectList<TZlecenie>)
@@ -12,6 +12,8 @@ type
     function Add(const zlecenie : TZlecenie) : Integer;
     procedure PolaczKolejneEtapyZlecenWSerii(seria : TGanttSeries);
     function ZnajdzEtapZleceniaZGanttId(ganttId : Integer) : TZlecenieEtap;
+    function EtapyDoHarmonogramowania() : TEtapy;
+    function WszystkieNierozpoczeteEtapy() : TEtapy;
   end;
 
 
@@ -42,6 +44,38 @@ implementation
       Result := zlecenie.ZnajdzEtapZleceniaZGanttId(ganttId);
       if not (Result = nil) then break;
     end;
+  end;
+
+  function TZlecenia.EtapyDoHarmonogramowania() : TEtapy;
+  var
+    etapyDoHarmonogramowania : TEtapy;
+    zlecenie : TZlecenie;
+    zlecenieEtap : TZlecenieEtap;
+  begin
+    etapyDoHarmonogramowania := TEtapy.Create(False);
+    for zlecenie in self do
+    begin
+      zlecenieEtap := zlecenie.PierwszyNierozpoczetyEtap();
+      if not (zlecenieEtap = nil) then
+        etapyDoHarmonogramowania.Add(zlecenieEtap);
+    end;
+    Result := etapyDoHarmonogramowania;
+  end;
+
+  function TZlecenia.WszystkieNierozpoczeteEtapy() : TEtapy;
+  var
+    nierozpoczeteEtapy : TEtapy;
+    zlecenie : TZlecenie;
+    etapZlecenia : TZlecenieEtap;
+  begin
+    nierozpoczeteEtapy := TEtapy.Create(False);
+    for zlecenie in self do
+    begin
+      for etapZlecenia in zlecenie do
+         if not etapZlecenia.rozpoczety then
+            nierozpoczeteEtapy.Add(etapZlecenia);
+    end;
+    Result := nierozpoczeteEtapy;
   end;
 
 end.

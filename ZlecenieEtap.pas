@@ -16,9 +16,11 @@ type
   TJ_M : Extended;
   ID_STANOWISKA : Integer;
   ID_RODZAJE_STANOWISK : Integer;
+  rozpoczety : Boolean;
   // info nt. czasu zajecia stanowiska
   DATA_START : TDateTime;
   DATA_KONIEC : TDateTime;
+  DATA_PROPONOWANA : TDateTime;
   // info nt. kolejnosci dodania do wykresu Gantta
   ganttID : Integer;
   // poprzedni, nastepny etap, zlecenie
@@ -27,9 +29,10 @@ type
   daneZlecenia : TZlecenieDane;
 
   procedure UstawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
-  function CzasWykonaniaNetto : Integer;
-  function PierwszyEtap : TZlecenieEtap;
-  function OstatniEtap : TZlecenieEtap;
+  function CzasWykonaniaNetto() : Integer;
+  function PierwszyEtap() : TZlecenieEtap;
+  function OstatniEtap() : TZlecenieEtap;
+  function DataProponowana() : TDateTime;
 
   end;
 
@@ -42,6 +45,11 @@ implementation
     TJ_M := query.FieldByName('TJ_M').AsExtended;
     ID_STANOWISKA := query.FieldByName('ID_STANOWISKA').AsInteger;
     ID_RODZAJE_STANOWISK := query.FieldByName('ID_RODZAJE_STANOWISK').AsInteger;
+    DATA_PROPONOWANA := 0;
+    rozpoczety := False;
+    poprzedniEtap := nil;
+    nastepnyEtap := nil;
+    daneZlecenia := nil;
   end;
 
   function TZlecenieEtap.CzasWykonaniaNetto : Integer;
@@ -53,16 +61,32 @@ implementation
     Result := Ceil(tmp);
   end;
 
-  function TZlecenieEtap.PierwszyEtap;
+  function TZlecenieEtap.PierwszyEtap() : TZlecenieEtap;
   begin
     if poprzedniEtap = nil then Result := self
     else Result := poprzedniEtap.PierwszyEtap;
   end;
 
-  function TZlecenieEtap.OstatniEtap;
+  function TZlecenieEtap.OstatniEtap() : TZlecenieEtap;
   begin
     if nastepnyEtap = nil then Result := self
     else Result := nastepnyEtap.OstatniEtap;
+  end;
+
+  function TZlecenieEtap.DataProponowana() : TDateTime;
+  begin
+    if self.DATA_PROPONOWANA > 0 then
+    begin
+      Result := DATA_PROPONOWANA;
+    end
+    else if not (poprzedniEtap = nil) then
+    begin
+      Result := poprzedniEtap.DATA_KONIEC;
+    end
+    else
+    begin
+      Result := daneZlecenia.PLAN_DATA_ROZPOCZECIA;
+    end;
   end;
 
 end.

@@ -25,8 +25,13 @@ type
     destructor Free;
 
     procedure DodajEtap(etapZlecenia : TZlecenieEtap);
+    procedure UsunEtap(etapZlecenia : TZlecenieEtap);
     procedure UstawDlaQueryZRodzajeStanowisk(query : TADOQuery);
     procedure UstawDlaQueryZeStanowiska(query : TADOQuery);
+
+    function WolneOCzasie(czas : TDateTime) : Boolean;
+    function EtapKonczacySiePoCzasie(czas : TDateTime) : TZlecenieEtap;
+    function CzasZakonczeniaOstatniegoEtapu() : TDateTime;
 
     function PotencjalnaDataCzasRozpoczeciaEtapu(potencjalnyStart,
       potencjalnyKoniec : TDateTime) : TDateTime;
@@ -47,6 +52,11 @@ implementation
   procedure TStanowisko.DodajEtap(etapZlecenia : TZlecenieEtap);
   begin
     listaEtapow.Add(etapZlecenia);
+  end;
+
+  procedure TStanowisko.UsunEtap(etapZlecenia: TZlecenieEtap);
+  begin
+    listaEtapow.Remove(etapZlecenia);
   end;
 
   procedure TStanowisko.UstawDlaQueryZRodzajeStanowisk(query : TADOQuery);
@@ -88,6 +98,44 @@ implementation
       if etapZlecenia.DATA_KONIEC > Result then Result := etapZlecenia.DATA_KONIEC;
     end;
 
+  end;
+
+  function TStanowisko.WolneOCzasie(czas: TDateTime) : Boolean;
+  var
+    zlecenieEtap : TZlecenieEtap;
+  begin
+    Result := True;
+    for zlecenieEtap in listaEtapow do
+    begin
+      if (zlecenieEtap.DATA_START <= czas)
+        and (zlecenieEtap.DATA_KONIEC >= czas)
+          then Result := False;
+    end;
+  end;
+
+  function TStanowisko.EtapKonczacySiePoCzasie(czas : TDateTime) : TZlecenieEtap;
+  var
+    zlecenieEtap : TZlecenieEtap;
+  begin
+    Result := nil;
+    for zlecenieEtap in listaEtapow do
+    begin
+      if (zlecenieEtap.DATA_START <= czas)
+        and (zlecenieEtap.DATA_KONIEC >= czas)
+          then Result := zlecenieEtap;
+    end;
+  end;
+
+  function TStanowisko.CzasZakonczeniaOstatniegoEtapu() : TDateTime;
+  var
+    zlecenieEtap : TZlecenieEtap;
+  begin
+    Result := 0;
+    for zlecenieEtap in listaEtapow do
+    begin
+      if Result < zlecenieEtap.DATA_KONIEC then
+        Result := zlecenieEtap.DATA_KONIEC;
+    end;
   end;
 
 end.
