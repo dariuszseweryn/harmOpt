@@ -11,6 +11,7 @@ type
 
     function Add(const zlecenie : TZlecenie) : Integer;
     procedure PolaczKolejneEtapyZlecenWSerii(seria : TGanttSeries);
+    procedure Czysc;
     function ZnajdzEtapZleceniaZGanttId(ganttId : Integer) : TZlecenieEtap;
     function EtapyDoHarmonogramowania() : TEtapy;
     function WszystkieNierozpoczeteEtapy() : TEtapy;
@@ -32,6 +33,14 @@ implementation
     begin
       zlecenie.PolaczKolejneEtapyZleceniaWSerii(seria);
     end;
+  end;
+
+  procedure TZlecenia.Czysc;
+  var
+    zlecenie : TZlecenie;
+  begin
+    for zlecenie in self do
+      zlecenie.Czysc;
   end;
 
   function TZlecenia.ZnajdzEtapZleceniaZGanttId(ganttId: Integer) : TZlecenieEtap;

@@ -7,7 +7,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Data.DB,
   Bde.DBTables, Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, VCLTee.TeEngine,
   VCLTee.Series, VCLTee.GanttCh, VCLTee.TeeGanttTool, VCLTee.TeeProcs,
-  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper, Stanowiska, Stanowisko, KolorHelper, System.DateUtils;
+  VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper, Stanowiska, Stanowisko, KolorHelper, System.DateUtils,
+  DyspozytorskaRegulaHarmonogramowaniaSPT, DyspozytorskaRegulaHarmonogramowaniaEDD, DyspozytorskaRegulaHarmonogramowaniaMDD, DyspozytorskaRegulaHarmonogramowaniaMST,
+  DyspozytorskaRegulaHarmonogramowaniaSCR, DyspozytorskaRegulaHarmonogramowaniaAOPN, DyspozytorskaRegulaHarmonogramowaniaSOPN, DyspozytorskaRegulaHarmonogramowania1ST,
+  DyspozytorskaRegulaHarmonogramowania;
 
 type
   TForm1 = class(TForm)
@@ -61,9 +64,21 @@ var
   zlecenie : TZlecenie;
   etapZlecenia : TZlecenieEtap;
   stanowisko : TStanowisko;
-  start, stop : TDateTime;
+  start, stop, tempTime : TDateTime;
   h, m, s, ms : Word;
+  I, J: Integer;
+  drhArray : array[1..1] of TDyspozytorskaRegulaHarmonogramowania;
+  drh : TDyspozytorskaRegulaHarmonogramowania;
 begin
+  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaSPT.Create(CH);
+//  drhArray[2] := TDyspozytorskaRegulaHarmonogramowaniaEDD.Create(CH);
+//  drhArray[3] := TDyspozytorskaRegulaHarmonogramowaniaMDD.Create(CH);
+//  drhArray[4] := TDyspozytorskaRegulaHarmonogramowaniaMST.Create(CH);
+//  drhArray[5] := TDyspozytorskaRegulaHarmonogramowaniaSCR.Create(CH);
+//  drhArray[6] := TDyspozytorskaRegulaHarmonogramowaniaAOPN.Create(CH);
+//  drhArray[7] := TDyspozytorskaRegulaHarmonogramowaniaSOPN.Create(CH);
+//  drhArray[8] := TDyspozytorskaRegulaHarmonogramowania1ST.Create(CH);
+
   if not (zlecenia = nil) then
   begin
     zlecenia.Free;
@@ -73,12 +88,27 @@ begin
   zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
   stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
 
-  start := Now;
-  Harmonogramator.Harmonogramuj(zlecenia, stanowiska);
-  stop := Now;
-  DecodeTime(TimeOf(stop - start),h,m,s,ms);
-  print('Czas Harmonogramowania = ' + IntToStr(h) + 'h ' + IntToStr(m) + 'm ' +
-                                      IntToStr(s) + 's ' + IntToStr(ms) + 'ms');
+  for J := 1 to Length(drhArray) do
+  begin
+    drh := drhArray[J];
+    tempTime := 0;
+    for I := 0 to 1 do
+    begin
+      zlecenia.Czysc;
+      stanowiska.Czysc;
+
+      start := Now;
+      Harmonogramator.Harmonogramuj(zlecenia, stanowiska, drh);
+      stop := Now;
+
+      tempTime := tempTime + (stop - start);
+    end;
+    DecodeTime(TimeOf(tempTime),h,m,s,ms);
+    print('Czas Harmonogramowania dla reguly ' + drh.NazwaReguly + ' = ' +
+          IntToStr(h) + 'h ' + IntToStr(m) + 'm ' +
+          IntToStr(s) + 's ' + IntToStr(ms) + 'ms');
+    drh.Free;
+  end;
 
 //  for zlecenie in zlecenia do
 //  begin
@@ -203,7 +233,7 @@ begin
   DBH := TDataBaseHelper.Create(ADOConnection1);
   CH := TCzasHelper.Create(EncodeTime(8,0,0,0),EncodeTime(16,0,0,0));
   KH := TKolorHelper.Create;
-  Harmonogramator := THarmonogramator.Create;
+  Harmonogramator := THarmonogramator.Create(CH);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

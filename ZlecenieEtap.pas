@@ -29,6 +29,7 @@ type
   daneZlecenia : TZlecenieDane;
 
   procedure UstawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
+  procedure Czysc;
   function CzasWykonaniaNetto() : Integer;
   function PierwszyEtap() : TZlecenieEtap;
   function OstatniEtap() : TZlecenieEtap;
@@ -50,6 +51,13 @@ implementation
     poprzedniEtap := nil;
     nastepnyEtap := nil;
     daneZlecenia := nil;
+  end;
+
+  procedure TZlecenieEtap.Czysc;
+  begin
+    DATA_START := 0;
+    DATA_KONIEC := 0;
+    DATA_PROPONOWANA := 0;
   end;
 
   function TZlecenieEtap.CzasWykonaniaNetto : Integer;

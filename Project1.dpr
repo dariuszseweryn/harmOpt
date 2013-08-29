@@ -16,7 +16,16 @@ uses
   ZlecenieDane in 'ZlecenieDane.pas',
   CzasHelper in 'CzasHelper.pas',
   KolorHelper in 'KolorHelper.pas',
-  Etapy in 'Etapy.pas';
+  Etapy in 'Etapy.pas',
+  DyspozytorskaRegulaHarmonogramowania in 'DyspozytorskaRegulaHarmonogramowania.pas',
+  DyspozytorskaRegulaHarmonogramowaniaSPT in 'DyspozytorskaRegulaHarmonogramowaniaSPT.pas',
+  DyspozytorskaRegulaHarmonogramowaniaEDD in 'DyspozytorskaRegulaHarmonogramowaniaEDD.pas',
+  DyspozytorskaRegulaHarmonogramowaniaMDD in 'DyspozytorskaRegulaHarmonogramowaniaMDD.pas',
+  DyspozytorskaRegulaHarmonogramowaniaMST in 'DyspozytorskaRegulaHarmonogramowaniaMST.pas',
+  DyspozytorskaRegulaHarmonogramowaniaSCR in 'DyspozytorskaRegulaHarmonogramowaniaSCR.pas',
+  DyspozytorskaRegulaHarmonogramowaniaAOPN in 'DyspozytorskaRegulaHarmonogramowaniaAOPN.pas',
+  DyspozytorskaRegulaHarmonogramowaniaSOPN in 'DyspozytorskaRegulaHarmonogramowaniaSOPN.pas',
+  DyspozytorskaRegulaHarmonogramowania1ST in 'DyspozytorskaRegulaHarmonogramowania1ST.pas';
 
 {$R *.res}
 

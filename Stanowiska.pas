@@ -14,6 +14,7 @@ type
     function StanowiskaNieZnajdujaceSieW(stanowiska : TStanowiska) : TStanowiska;
     function StanowiskoDoKtoregoJestPrzydzielonyEtap(etapZlecenia : TZlecenieEtap) : TStanowisko;
     function CzasZakonczeniaNajwczesniejszejZOstatnichOperacji() : TDateTime;
+    procedure Czysc;
   end;
 
 
@@ -116,6 +117,14 @@ implementation
       if Result > czasZakonczeniaEtapu then
         Result := IncMinute(czasZakonczeniaEtapu,1);
     end;
+  end;
+
+  procedure TStanowiska.Czysc;
+  var
+    stanowisko : TStanowisko;
+  begin
+    for stanowisko in self do
+      stanowisko.Czysc;
   end;
 
 end.

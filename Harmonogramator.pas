@@ -3,29 +3,18 @@ unit Harmonogramator;
 interface
 
 uses
-  System.SysUtils, System.Generics.Collections, Math, Stanowiska, Stanowisko, Zlecenia, Zlecenie, ZlecenieEtap, CzasHelper, Etapy, ZlecenieDane;
+  System.SysUtils, System.Generics.Collections, DyspozytorskaRegulaHarmonogramowania, Math, Stanowiska, Stanowisko, Zlecenia, Zlecenie, ZlecenieEtap, CzasHelper, Etapy, ZlecenieDane;
 
 type
   THarmonogramator = class
   private
     function ListyZawierajaTaSamaDateNaJednymIndeksie(lista1, lista2 : TList<TDateTime>) : Boolean;
-    function SPT(etapy : TEtapy) : TZlecenieEtap;
-    function EDD(etapy : TEtapy) : TZlecenieEtap;
-    function MDD(etapy : TEtapy) : TZlecenieEtap;
-    function MST(etapy : TEtapy) : TZlecenieEtap;
-    function SCR(etapy : TEtapy) : TZlecenieEtap;
-    function AOPN(etapy : TEtapy) : TZlecenieEtap;
-    function SOPN(etapy : TEtapy) : TZlecenieEtap;
-    function VerifyZlecenia(zlecenia : TZlecenia) : Boolean;
-    function PozostalyCzasWykonaniaNettoWyrobu(etapZlecenia : TZlecenieEtap) : Integer;
-    function IloscPozostalychOperacji(etapZlecenia : TZlecenieEtap) : Integer;
     var
       CzasHelper : TCzasHelper;
 
   public
-    constructor Create;
-    destructor Free;
-    procedure Harmonogramuj(zlecenia : TZlecenia; stanowiska : TStanowiska);
+    constructor Create(czasHelperToUse : TCzasHelper);
+    procedure Harmonogramuj(zlecenia : TZlecenia; stanowiska : TStanowiska; drh : TDyspozytorskaRegulaHarmonogramowania);
   end;
 
 implementation
@@ -47,17 +36,12 @@ implementation
 
   // public
 
-  constructor THarmonogramator.Create;
+  constructor THarmonogramator.Create(czasHelperToUse : TCzasHelper);
   begin
-    CzasHelper := TCzasHelper.Create(EncodeTime(8,0,0,0), EncodeTime(16,0,0,0));
+    CzasHelper := czasHelperToUse;
   end;
 
-  destructor THarmonogramator.Free;
-  begin
-    CzasHelper.Free;
-  end;
-
-  procedure THarmonogramator.Harmonogramuj(zlecenia : TZlecenia; stanowiska : TStanowiska);
+  procedure THarmonogramator.Harmonogramuj(zlecenia : TZlecenia; stanowiska : TStanowiska; drh : TDyspozytorskaRegulaHarmonogramowania);
   var
     stan : Int8;
     operacjeDoHarmonogramowania,
@@ -69,7 +53,6 @@ implementation
     potencjalneMaszyny, niezajeteMaszyny, mozeNiezajeteMaszyny : TStanowiska;
     niezajetaMaszyna, maszynaDoOproznienia, mozeNiezajetaMaszyna : TStanowisko;
     moznaWydziedziczycOperacje : Boolean;
-//
 
 //    zlecenie : TZlecenie;
 //    etapZlecenia : TZlecenieEtap;
@@ -79,11 +62,6 @@ implementation
 //    tmpDatyCzasyPoczatku, datyCzasyPoczatku, datyCzasyKonca : TList<TDateTime>;
 //    I, J, czasTrwaniaEtapuMinuty : Integer;
   begin
-    if not VerifyZlecenia(zlecenia) then
-    begin
-      zlecenia := zlecenia;
-    end;
-
 
     while not (stan = 15) do
     begin
@@ -111,7 +89,7 @@ implementation
         end;
         3:
         begin
-          operacja := SPT(najwczesniejszeOperacje);
+          operacja := drh.WybierzZEtapy(najwczesniejszeOperacje);
           stan := 4;
         end;
         4:
@@ -291,214 +269,5 @@ implementation
 //    end;
 
   end;
-
-  function THarmonogramator.SPT(etapy: TEtapy) : TZlecenieEtap;
-  var
-    etapZlecenia : TZlecenieEtap;
-  begin
-    Result := nil;
-    etapZlecenia := nil;
-    for etapZlecenia in etapy do
-    begin
-      if Result = nil then
-      begin
-        Result := etapZlecenia;
-      end
-      else if (Result.CzasWykonaniaNetto > etapZlecenia.CzasWykonaniaNetto) then
-        Result := etapZlecenia;
-    end;
-  end;
-
-  function THarmonogramator.EDD(etapy: TEtapy) : TZlecenieEtap;
-  var
-    etapZlecenia : TZlecenieEtap;
-  begin
-    Result := nil;
-    etapZlecenia := nil;
-    for etapZlecenia in etapy do
-    begin
-      if Result = nil then
-      begin
-        Result := etapZlecenia;
-      end
-      else if (Result.daneZlecenia.PLAN_TERMIN_REALIZACJI > etapZlecenia.daneZlecenia.PLAN_TERMIN_REALIZACJI) then
-        Result := etapZlecenia;
-    end;
-  end;
-
-  function THarmonogramator.MDD(etapy: TEtapy) : TZlecenieEtap;
-  var
-    etapZlecenia : TZlecenieEtap;
-    resultMDD, etapZleceniaMDD : TDateTime;
-  begin
-    Result := nil;
-    etapZlecenia := nil;
-    for etapZlecenia in etapy do
-    begin
-      if Result = nil then
-      begin
-        Result := etapZlecenia;
-      end
-      else
-      begin
-        resultMDD := Max(CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(Result.DataProponowana, PozostalyCzasWykonaniaNettoWyrobu(Result)), Result.daneZlecenia.PLAN_TERMIN_REALIZACJI);
-        etapZleceniaMDD := Max(CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(etapZlecenia.DataProponowana, PozostalyCzasWykonaniaNettoWyrobu(etapZlecenia)), etapZlecenia.daneZlecenia.PLAN_TERMIN_REALIZACJI);
-        if (resultMDD > etapZleceniaMDD) then
-          Result := etapZlecenia;
-      end;
-    end;
-  end;
-
-  function THarmonogramator.MST(etapy: TEtapy) : TZlecenieEtap;
-  var
-    etapZlecenia : TZlecenieEtap;
-    resultST, etapST : TDateTime;
-  begin
-    Result := nil;
-    etapZlecenia := nil;
-    for etapZlecenia in etapy do
-    begin
-      if Result = nil then
-      begin
-        Result := etapZlecenia;
-      end
-      else
-      begin
-        resultST := Result.daneZlecenia.PLAN_TERMIN_REALIZACJI - CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(Result.DataProponowana, PozostalyCzasWykonaniaNettoWyrobu(Result));
-        etapST := etapZlecenia.daneZlecenia.PLAN_TERMIN_REALIZACJI - CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(etapZlecenia.DataProponowana, PozostalyCzasWykonaniaNettoWyrobu(etapZlecenia));
-        if (resultST > etapST) then
-          Result := etapZlecenia;
-      end;
-    end;
-  end;
-
-  function THarmonogramator.SCR(etapy: TEtapy) : TZlecenieEtap;
-  var
-    etapZlecenia : TZlecenieEtap;
-    resultCR, etapCR : TDateTime;
-  begin
-    Result := nil;
-    etapZlecenia := nil;
-    for etapZlecenia in etapy do
-    begin
-      if Result = nil then
-      begin
-        Result := etapZlecenia;
-      end
-      else
-      begin
-        resultCR := (Result.daneZlecenia.PLAN_TERMIN_REALIZACJI - Result.DataProponowana) / CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(Result.DataProponowana, PozostalyCzasWykonaniaNettoWyrobu(Result));
-        etapCR := (etapZlecenia.daneZlecenia.PLAN_TERMIN_REALIZACJI - etapZlecenia.DataProponowana) / CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(etapZlecenia.DataProponowana, PozostalyCzasWykonaniaNettoWyrobu(etapZlecenia));
-        if (resultCR > etapCR) then
-          Result := etapZlecenia;
-      end;
-    end;
-  end;
-
-  function THarmonogramator.AOPN(etapy: TEtapy) : TZlecenieEtap;
-  var
-    etapZlecenia : TZlecenieEtap;
-    resultOPN, etapOPN : TDateTime;
-  begin
-    Result := nil;
-    etapZlecenia := nil;
-    for etapZlecenia in etapy do
-    begin
-      if Result = nil then
-      begin
-        Result := etapZlecenia;
-      end
-      else
-      begin
-        resultOPN := (Result.daneZlecenia.PLAN_TERMIN_REALIZACJI - Result.DataProponowana) / IloscPozostalychOperacji(Result);
-        etapOPN := (etapZlecenia.daneZlecenia.PLAN_TERMIN_REALIZACJI - etapZlecenia.DataProponowana) / IloscPozostalychOperacji(etapZlecenia);
-        if (resultOPN > etapOPN) then
-          Result := etapZlecenia;
-      end;
-    end;
-  end;
-
-  function THarmonogramator.SOPN(etapy: TEtapy) : TZlecenieEtap;
-  var
-    etapZlecenia : TZlecenieEtap;
-    resultSOPN, etapSOPN : TDateTime;
-  begin
-    Result := nil;
-    etapZlecenia := nil;
-    for etapZlecenia in etapy do
-    begin
-      if Result = nil then
-      begin
-        Result := etapZlecenia;
-      end
-      else
-      begin
-        resultSOPN := (Result.daneZlecenia.PLAN_TERMIN_REALIZACJI - CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(Result.DataProponowana, Result.CzasWykonaniaNetto)) / IloscPozostalychOperacji(Result);
-        etapSOPN := (etapZlecenia.daneZlecenia.PLAN_TERMIN_REALIZACJI - CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(etapZlecenia.DataProponowana, etapZlecenia.CzasWykonaniaNetto)) / IloscPozostalychOperacji(etapZlecenia);
-        if (resultSOPN > etapSOPN) then
-          Result := etapZlecenia;
-      end;
-    end;
-  end;
-
-  function THarmonogramator.VerifyZlecenia(zlecenia : TZlecenia) : boolean;
-  var
-    zlecenie : TZlecenie;
-    etap, nastepny : TZlecenieEtap;
-    daneZlecenia : TZlecenieDane;
-  begin
-    Result := True;
-    for zlecenie in zlecenia do
-    begin
-      daneZlecenia := zlecenie.daneZlecenia;
-      etap := nil;
-      nastepny := nil;
-      for etap in zlecenie do
-      begin
-        if Assigned(nastepny) then
-        begin
-          if not (nastepny = etap) then
-          begin
-            Result := False;
-          end;
-          if not (nastepny.daneZlecenia = daneZlecenia) then
-          begin
-            Result := False;
-          end;
-        end;
-        if not (etap.daneZlecenia = daneZlecenia) then
-        begin
-          Result := False;
-        end;
-        nastepny := etap.nastepnyEtap;
-      end;
-      nastepny := nil;
-    end;
-  end;
-
-  function THarmonogramator.PozostalyCzasWykonaniaNettoWyrobu(etapZlecenia : TZlecenieEtap) : Integer;
-  var
-    etapTemp : TZlecenieEtap;
-  begin
-    Result := etapZlecenia.CzasWykonaniaNetto();
-    etapTemp := etapZlecenia;
-    while not (etapTemp.nastepnyEtap = nil) do
-    begin
-      etapTemp := etapTemp.nastepnyEtap;
-      Result := Result + etapTemp.CzasWykonaniaNetto();
-    end;
-  end;
-
-  function THarmonogramator.IloscPozostalychOperacji(etapZlecenia : TZlecenieEtap) : Integer;
-  var
-    etapTemp : TZlecenieEtap;
-  begin
-    Result := 1;
-    etapTemp := etapZlecenia;
-    while not (etapTemp.nastepnyEtap = nil) do
-    begin
-      etapTemp := etapTemp.nastepnyEtap;
-      Result := Result + 1;
-    end;
-  end;
 end.
+

@@ -123,7 +123,6 @@ object Form1: TForm1
     Align = alTop
     TabOrder = 2
     OnMouseUp = Chart1MouseUp
-    ExplicitTop = 448
     PrintMargins = (
       15
       33
@@ -138,8 +137,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 7028779
-      Pointer.Gradient.EndColor = 7028779
+      Pointer.Brush.Gradient.EndColor = 10401629
+      Pointer.Gradient.EndColor = 10401629
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15

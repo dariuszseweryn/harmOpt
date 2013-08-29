@@ -28,6 +28,7 @@ type
     procedure UsunEtap(etapZlecenia : TZlecenieEtap);
     procedure UstawDlaQueryZRodzajeStanowisk(query : TADOQuery);
     procedure UstawDlaQueryZeStanowiska(query : TADOQuery);
+    procedure Czysc;
 
     function WolneOCzasie(czas : TDateTime) : Boolean;
     function EtapKonczacySiePoCzasie(czas : TDateTime) : TZlecenieEtap;
@@ -71,6 +72,11 @@ implementation
     NAZ_STANOWISKA := query.FieldByName('NAZ_STANOWISKA').AsString;
     KOD_STANOWISKA := query.FieldByName('KOD_STANOWISKA').AsString;
     ID_STANOWISKA := query.FieldByName('ID_STANOWISKA').AsInteger;
+  end;
+
+  procedure TStanowisko.Czysc;
+  begin
+    listaEtapow.Clear;
   end;
 
   // zwraca ta sama date jesli wolne w szukanym okresie czasu.

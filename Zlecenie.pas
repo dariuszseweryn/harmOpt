@@ -21,6 +21,7 @@ type
 
     function Add(etapZlecenia : TZlecenieEtap) : Integer;
     procedure PolaczKolejneEtapyZleceniaWSerii(seria : TGanttSeries);
+    procedure Czysc;
     function ZnajdzEtapZleceniaZGanttId(ganttId : Integer) : TZlecenieEtap;
     function PierwszyNierozpoczetyEtap() : TZlecenieEtap;
   end;
@@ -61,6 +62,14 @@ implementation
     for etapZlecenia in self do
       if not (etapZlecenia.poprzedniEtap = nil) then
           seria.NextTask[etapZlecenia.poprzedniEtap.ganttID] := etapZlecenia.ganttID;
+  end;
+
+  procedure TZlecenie.Czysc;
+  var
+    etapZlecenia : TZlecenieEtap;
+  begin
+    for etapZlecenia in self do
+      etapZlecenia.Czysc;
   end;
 
   function TZlecenie.ZnajdzEtapZleceniaZGanttId(ganttId: Integer) : TZlecenieEtap;
