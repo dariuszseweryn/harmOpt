@@ -62,15 +62,16 @@ implementation
 //    tmpDatyCzasyPoczatku, datyCzasyPoczatku, datyCzasyKonca : TList<TDateTime>;
 //    I, J, czasTrwaniaEtapuMinuty : Integer;
   begin
+    stan := 1;
 
-    while not (stan = 15) do
+    while not (stan = 16) do
     begin
       case stan of
-        0:
-        begin
-          stan := 1;
-        end;
         1:
+        begin
+          stan := 2;
+        end;
+        2:
         begin
           operacjeDoHarmonogramowania := zlecenia.EtapyDoHarmonogramowania(); // C
           for operacja in operacjeDoHarmonogramowania do
@@ -79,31 +80,31 @@ implementation
           end;
 
           wszystkieOperacje := zlecenia.WszystkieNierozpoczeteEtapy(); // C
-          stan := 2;
-        end;
-        2:
-        begin
-          najwczesniejszyCzasProponowany := operacjeDoHarmonogramowania.NajwczesniejszyCzasProponowany(True);
-          najwczesniejszeOperacje := operacjeDoHarmonogramowania.OperacjeZCzasemProponowanym(najwczesniejszyCzasProponowany); //C
           stan := 3;
         end;
         3:
         begin
-          operacja := drh.WybierzZEtapy(najwczesniejszeOperacje);
+          najwczesniejszyCzasProponowany := operacjeDoHarmonogramowania.NajwczesniejszyCzasProponowany(True);
+          najwczesniejszeOperacje := operacjeDoHarmonogramowania.OperacjeZCzasemProponowanym(najwczesniejszyCzasProponowany); //C
           stan := 4;
         end;
         4:
         begin
-          potencjalneMaszyny := stanowiska.StanowiskaPasujaceDlaEtapuZlecenia(operacja); // C
-          niezajeteMaszyny := potencjalneMaszyny.StanowiskaNieZajeteOCzasie(najwczesniejszyCzasProponowany); // C
+          operacja := drh.WybierzZEtapy(najwczesniejszeOperacje);
           stan := 5;
         end;
         5:
         begin
-          if niezajeteMaszyny.Count > 0 then stan := 6
-          else stan := 9;
+          potencjalneMaszyny := stanowiska.StanowiskaPasujaceDlaEtapuZlecenia(operacja); // C
+          niezajeteMaszyny := potencjalneMaszyny.StanowiskaNieZajeteOCzasie(najwczesniejszyCzasProponowany); // C
+          stan := 6;
         end;
         6:
+        begin
+          if niezajeteMaszyny.Count > 0 then stan := 7
+          else stan := 10;
+        end;
+        7:
         begin
           niezajetaMaszyna := niezajeteMaszyny.Items[0];
           niezajetaMaszyna.DodajEtap(operacja);
@@ -114,25 +115,25 @@ implementation
           operacja.DATA_KONIEC := CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(najwczesniejszyCzasProponowany, operacja.CzasWykonaniaNetto);
           potencjalneMaszyny.Free(); // D
           niezajeteMaszyny.Free(); // D
-          stan := 7;
-        end;
-        7:
-        begin
-          if not (operacja.nastepnyEtap = nil) then stan := 8
-          else stan := 13;
+          stan := 8;
         end;
         8:
         begin
-          operacjeDoHarmonogramowania.Add(operacja.nastepnyEtap);
-          stan := 13;
+          if not (operacja.nastepnyEtap = nil) then stan := 9
+          else stan := 14;
         end;
         9:
         begin
-          operacjeTrwajaceNaMaszynach := potencjalneMaszyny. // C
-            OperacjeKonczaceSiePoCzasie(najwczesniejszyCzasProponowany);
-          stan := 10;
+          operacjeDoHarmonogramowania.Add(operacja.nastepnyEtap);
+          stan := 14;
         end;
         10:
+        begin
+          operacjeTrwajaceNaMaszynach := potencjalneMaszyny. // C
+            OperacjeKonczaceSiePoCzasie(najwczesniejszyCzasProponowany);
+          stan := 11;
+        end;
+        11:
         begin
           moznaWydziedziczycOperacje := False;
           for operacjaTemp in operacjeTrwajaceNaMaszynach do
@@ -153,43 +154,44 @@ implementation
             if moznaWydziedziczycOperacje then break;
           end;
           operacjeTrwajaceNaMaszynach.Free(); // D
-          if moznaWydziedziczycOperacje then stan := 11
-          else stan := 12;
+          if moznaWydziedziczycOperacje then stan := 12
+          else stan := 13;
         end;
-        11:
+        12:
         begin
           mozeNiezajetaMaszyna.DodajEtap(operacjaTemp);
           maszynaDoOproznienia.UsunEtap(operacjaTemp);
           niezajeteMaszyny.Add(maszynaDoOproznienia);
-          stan := 6;
-        end;
-        12:
-        begin
-          operacja.DATA_PROPONOWANA := potencjalneMaszyny.CzasZakonczeniaNajwczesniejszejZOstatnichOperacji();
-          najwczesniejszeOperacje.Remove(operacja);
-          stan := 13;
+          stan := 7;
         end;
         13:
         begin
-          if najwczesniejszeOperacje.Count > 0 then stan := 3
-          else
-          begin
-            najwczesniejszeOperacje.Free; // D
-            stan := 14;
-          end;
+          operacja.DATA_PROPONOWANA := potencjalneMaszyny.CzasZakonczeniaNajwczesniejszejZOstatnichOperacji();
+          najwczesniejszeOperacje.Remove(operacja);
+          stan := 14;
         end;
         14:
         begin
-          if wszystkieOperacje.Count > 0 then stan := 2
+          if najwczesniejszeOperacje.Count > 0 then stan := 4
+          else
+          begin
+            najwczesniejszeOperacje.Free; // D
+            stan := 15;
+          end;
+        end;
+        15:
+        begin
+          if wszystkieOperacje.Count > 0 then stan := 3
           else
           begin
             wszystkieOperacje.Free(); // D
-            stan := 15;
+            operacjeDoHarmonogramowania.Free(); // D
+            stan := 16;
           end;
         end;
       end;
     end;
-    stan := 0;
+
 //    tmpDatyCzasyPoczatku := TList<TDateTime>.Create;
 //    datyCzasyPoczatku := TList<TDateTime>.Create;
 //    datyCzasyKonca := TList<TDateTime>.Create;
