@@ -129,6 +129,7 @@ begin
 //            'czas trwania ' + IntToStr(etapZlecenia.CzasWykonaniaNetto));
 //    end;
 //  end;
+  for zlecenie in zlecenia do KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
 
   for stanowisko in stanowiska do
   begin
