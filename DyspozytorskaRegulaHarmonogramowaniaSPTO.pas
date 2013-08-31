@@ -1,4 +1,4 @@
-unit DyspozytorskaRegulaHarmonogramowaniaSPT;
+unit DyspozytorskaRegulaHarmonogramowaniaSPTO;
 
 interface
 
@@ -29,7 +29,7 @@ implementation
 
   function TDyspozytorskaRegulaHarmonogramowaniaSPT.NazwaReguly;
   begin
-    Result := 'SPT';
+    Result := 'SPT dla operacji';
   end;
 
 end.

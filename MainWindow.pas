@@ -8,8 +8,8 @@ uses
   Bde.DBTables, Vcl.Grids, Vcl.DBGrids, Data.Win.ADODB, VCLTee.TeEngine,
   VCLTee.Series, VCLTee.GanttCh, VCLTee.TeeGanttTool, VCLTee.TeeProcs,
   VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper, Stanowiska, Stanowisko, KolorHelper, System.DateUtils,
-  DyspozytorskaRegulaHarmonogramowaniaSPT, DyspozytorskaRegulaHarmonogramowaniaEDD, DyspozytorskaRegulaHarmonogramowaniaMDD, DyspozytorskaRegulaHarmonogramowaniaMST,
-  DyspozytorskaRegulaHarmonogramowaniaSCR, DyspozytorskaRegulaHarmonogramowaniaAOPN, DyspozytorskaRegulaHarmonogramowaniaSOPN, DyspozytorskaRegulaHarmonogramowania1ST,
+  DyspozytorskaRegulaHarmonogramowaniaSPTO, DyspozytorskaRegulaHarmonogramowaniaSPTW, DyspozytorskaRegulaHarmonogramowaniaEDDW, DyspozytorskaRegulaHarmonogramowaniaMDD, DyspozytorskaRegulaHarmonogramowaniaMST,
+  DyspozytorskaRegulaHarmonogramowaniaSCRW, DyspozytorskaRegulaHarmonogramowaniaAOPN, DyspozytorskaRegulaHarmonogramowaniaSOPN, DyspozytorskaRegulaHarmonogramowania1ST,
   DyspozytorskaRegulaHarmonogramowania;
 
 type
@@ -70,15 +70,17 @@ var
   drhArray : array[1..1] of TDyspozytorskaRegulaHarmonogramowania;
   drh : TDyspozytorskaRegulaHarmonogramowania;
 begin
-  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaSPT.Create(CH);
-//  drhArray[2] := TDyspozytorskaRegulaHarmonogramowaniaEDD.Create(CH);
+//  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaSPTO.Create(CH);
+  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaSPTW.Create(CH);
+//  drhArray[2] := TDyspozytorskaRegulaHarmonogramowaniaEDDW.Create(CH);
 //  drhArray[3] := TDyspozytorskaRegulaHarmonogramowaniaMDD.Create(CH);
-//  drhArray[4] := TDyspozytorskaRegulaHarmonogramowaniaMST.Create(CH);
-//  drhArray[5] := TDyspozytorskaRegulaHarmonogramowaniaSCR.Create(CH);
+//  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaMST.Create(CH);
+//  drhArray[5] := TDyspozytorskaRegulaHarmonogramowaniaSCRW.Create(CH);
 //  drhArray[6] := TDyspozytorskaRegulaHarmonogramowaniaAOPN.Create(CH);
 //  drhArray[7] := TDyspozytorskaRegulaHarmonogramowaniaSOPN.Create(CH);
 //  drhArray[8] := TDyspozytorskaRegulaHarmonogramowania1ST.Create(CH);
 
+  Series1.Clear;
   if not (zlecenia = nil) then
   begin
     zlecenia.Free;

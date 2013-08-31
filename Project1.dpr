@@ -18,14 +18,15 @@ uses
   KolorHelper in 'KolorHelper.pas',
   Etapy in 'Etapy.pas',
   DyspozytorskaRegulaHarmonogramowania in 'DyspozytorskaRegulaHarmonogramowania.pas',
-  DyspozytorskaRegulaHarmonogramowaniaSPT in 'DyspozytorskaRegulaHarmonogramowaniaSPT.pas',
-  DyspozytorskaRegulaHarmonogramowaniaEDD in 'DyspozytorskaRegulaHarmonogramowaniaEDD.pas',
+  DyspozytorskaRegulaHarmonogramowaniaSPTO in 'DyspozytorskaRegulaHarmonogramowaniaSPTO.pas',
+  DyspozytorskaRegulaHarmonogramowaniaEDDW in 'DyspozytorskaRegulaHarmonogramowaniaEDDW.pas',
   DyspozytorskaRegulaHarmonogramowaniaMDD in 'DyspozytorskaRegulaHarmonogramowaniaMDD.pas',
   DyspozytorskaRegulaHarmonogramowaniaMST in 'DyspozytorskaRegulaHarmonogramowaniaMST.pas',
-  DyspozytorskaRegulaHarmonogramowaniaSCR in 'DyspozytorskaRegulaHarmonogramowaniaSCR.pas',
+  DyspozytorskaRegulaHarmonogramowaniaSCRW in 'DyspozytorskaRegulaHarmonogramowaniaSCRW.pas',
   DyspozytorskaRegulaHarmonogramowaniaAOPN in 'DyspozytorskaRegulaHarmonogramowaniaAOPN.pas',
   DyspozytorskaRegulaHarmonogramowaniaSOPN in 'DyspozytorskaRegulaHarmonogramowaniaSOPN.pas',
-  DyspozytorskaRegulaHarmonogramowania1ST in 'DyspozytorskaRegulaHarmonogramowania1ST.pas';
+  DyspozytorskaRegulaHarmonogramowania1ST in 'DyspozytorskaRegulaHarmonogramowania1ST.pas',
+  DyspozytorskaRegulaHarmonogramowaniaSPTW in 'DyspozytorskaRegulaHarmonogramowaniaSPTW.pas';
 
 {$R *.res}
 

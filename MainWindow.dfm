@@ -137,8 +137,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 10401629
-      Pointer.Gradient.EndColor = 10401629
+      Pointer.Brush.Gradient.EndColor = 1330417
+      Pointer.Gradient.EndColor = 1330417
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15

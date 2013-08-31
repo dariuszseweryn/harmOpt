@@ -1,4 +1,4 @@
-unit DyspozytorskaRegulaHarmonogramowaniaEDD;
+unit DyspozytorskaRegulaHarmonogramowaniaEDDW;
 
 interface
 
@@ -6,7 +6,7 @@ uses
   DyspozytorskaRegulaHarmonogramowania, Etapy, ZlecenieEtap;
 
 type
-  TDyspozytorskaRegulaHarmonogramowaniaEDD = class(TDyspozytorskaRegulaHarmonogramowania)
+  TDyspozytorskaRegulaHarmonogramowaniaEDDW = class(TDyspozytorskaRegulaHarmonogramowania)
   public
     function WybierzZEtapy(etapy : TEtapy) : TZlecenieEtap; override;
     function NazwaReguly() : String; override;
@@ -14,7 +14,7 @@ type
 
 implementation
 
-  function TDyspozytorskaRegulaHarmonogramowaniaEDD.WybierzZEtapy(etapy: TEtapy) : TZlecenieEtap;
+  function TDyspozytorskaRegulaHarmonogramowaniaEDDW.WybierzZEtapy(etapy: TEtapy) : TZlecenieEtap;
   var
     etapZlecenia : TZlecenieEtap;
   begin
@@ -31,9 +31,9 @@ implementation
     end;
   end;
 
-  function TDyspozytorskaRegulaHarmonogramowaniaEDD.NazwaReguly;
+  function TDyspozytorskaRegulaHarmonogramowaniaEDDW.NazwaReguly;
   begin
-    Result := 'EDD';
+    Result := 'EDD dla wyrobu';
   end;
 
 end.

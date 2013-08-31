@@ -98,14 +98,15 @@
         <DCCReference Include="KolorHelper.pas"/>
         <DCCReference Include="Etapy.pas"/>
         <DCCReference Include="DyspozytorskaRegulaHarmonogramowania.pas"/>
-        <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaSPT.pas"/>
-        <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaEDD.pas"/>
+        <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaSPTO.pas"/>
+        <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaEDDW.pas"/>
         <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaMDD.pas"/>
         <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaMST.pas"/>
-        <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaSCR.pas"/>
+        <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaSCRW.pas"/>
         <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaAOPN.pas"/>
         <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaSOPN.pas"/>
         <DCCReference Include="DyspozytorskaRegulaHarmonogramowania1ST.pas"/>
+        <DCCReference Include="DyspozytorskaRegulaHarmonogramowaniaSPTW.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
