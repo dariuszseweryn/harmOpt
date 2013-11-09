@@ -20,50 +20,42 @@ object Form1: TForm1
     Left = 3
     Top = 3
     Width = 910
-    Height = 97
+    Height = 54
     Align = alTop
-    Caption = 'Connection Configuration'
+    Caption = 'Ustawienia Harmonogramowania'
     TabOrder = 0
-    object Button1: TButton
-      Left = 16
-      Top = 23
-      Width = 75
-      Height = 25
-      Caption = 'Chart'
-      TabOrder = 0
-      OnClick = Button1Click
-    end
+    OnClick = GroupBox1Click
     object Button2: TButton
-      Left = 112
-      Top = 23
-      Width = 75
+      Left = 16
+      Top = 19
+      Width = 171
       Height = 25
-      Caption = 'Harm'
-      TabOrder = 1
+      Caption = 'Harmonogramuj'
+      TabOrder = 0
       OnClick = Button2Click
     end
     object CheckBox1: TCheckBox
-      Left = 16
-      Top = 64
-      Width = 171
+      Left = 440
+      Top = 23
+      Width = 273
       Height = 17
-      Caption = 'Przeci'#261'ganie'
-      TabOrder = 2
+      Caption = 'Pozw'#243'l na przeci'#261'ganie etap'#243'w'
+      TabOrder = 1
       OnClick = CheckBox1Click
     end
     object ComboBox1: TComboBox
-      Left = 216
-      Top = 23
+      Left = 208
+      Top = 21
       Width = 209
       Height = 21
-      TabOrder = 3
+      TabOrder = 2
       Text = 'ComboBox1'
     end
   end
   object Memo1: TMemo
     AlignWithMargins = True
     Left = 3
-    Top = 106
+    Top = 63
     Width = 910
     Height = 335
     Align = alTop
@@ -71,11 +63,12 @@ object Form1: TForm1
       'Memo1')
     ScrollBars = ssVertical
     TabOrder = 1
+    ExplicitTop = 106
   end
   object Chart1: TChart
     AlignWithMargins = True
     Left = 3
-    Top = 447
+    Top = 404
     Width = 910
     Height = 377
     BackWall.Brush.Gradient.Direction = gdBottomTop
@@ -130,7 +123,9 @@ object Form1: TForm1
     TopAxis.Title.Font.Name = 'Verdana'
     Align = alTop
     TabOrder = 2
+    Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseUp = Chart1MouseUp
+    ExplicitTop = 447
     PrintMargins = (
       15
       33
@@ -145,8 +140,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 10708548
-      Pointer.Gradient.EndColor = 10708548
+      Pointer.Brush.Gradient.EndColor = 7028779
+      Pointer.Gradient.EndColor = 7028779
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15
@@ -178,7 +173,7 @@ object Form1: TForm1
     LoginPrompt = False
     Mode = cmRead
     Provider = 'SQLOLEDB.1'
-    Left = 352
-    Top = 40
+    Left = 672
+    Top = 24
   end
 end

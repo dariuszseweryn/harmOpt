@@ -16,7 +16,6 @@ type
   TForm1 = class(TForm)
     GroupBox1: TGroupBox;
     ADOConnection1: TADOConnection;
-    Button1: TButton;
     Button2: TButton;
     Memo1: TMemo;
     Chart1: TChart;
@@ -34,6 +33,7 @@ type
     procedure CheckBox1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure GroupBox1Click(Sender: TObject);
   private
 
     zlecenia : TZlecenia;
@@ -159,27 +159,6 @@ end;
 procedure TForm1.print(printString : String);
 begin
   Memo1.Text := Memo1.Text + printString + #13#10;
-end;
-
-procedure TForm1.Button1Click(Sender: TObject);
-var
-  Task1 : Integer;
-  Task2 : Integer;
-  data1 : TDateTime;
-  data2 : TDateTime;
-begin
-//  Task1 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,0,0,0), EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), 0, 'raz');
-//  print(IntToStr(Task1));
-//  Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(13,0,0,0), 0, 'raz');
-//  Task2 := Series1.AddGantt(EncodeDate(2013,3,1)+EncodeTime(12,30,0,0), EncodeDate(2013,3,1)+EncodeTime(15,0,0,0), 1, 'dwa');
-//  Series1.NextTask[Task1] := Task2;
-//  Chart1.AddSeries(Series1);
-  data1 := EncodeDate(2013,4,19) + EncodeTime(8,0,0,0);
-  print(DateTimeToStr(data1));
-  data2 := CH.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(data1, 961);
-  print(DateTimeToStr(data2));
-  data1 := CH.DataCzasRozpoczeciaDlaDatyCzasuZakonczeniaICzasuTrwania(data2, 961);
-  print(DateTimeToStr(data1));
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
