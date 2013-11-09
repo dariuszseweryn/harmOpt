@@ -10,7 +10,7 @@ uses
   VCLTee.Chart, DataBaseHelper, Zlecenia, Zlecenie, ZlecenieEtap, Harmonogramator, CzasHelper, Stanowiska, Stanowisko, KolorHelper, System.DateUtils,
   DyspozytorskaRegulaHarmonogramowaniaSPTO, DyspozytorskaRegulaHarmonogramowaniaSPTW, DyspozytorskaRegulaHarmonogramowaniaEDDW, DyspozytorskaRegulaHarmonogramowaniaMDD, DyspozytorskaRegulaHarmonogramowaniaMST,
   DyspozytorskaRegulaHarmonogramowaniaSCRW, DyspozytorskaRegulaHarmonogramowaniaAOPN, DyspozytorskaRegulaHarmonogramowaniaSOPN, DyspozytorskaRegulaHarmonogramowania1ST,
-  DyspozytorskaRegulaHarmonogramowania;
+  DyspozytorskaRegulaHarmonogramowania, Vcl.ComCtrls;
 
 type
   TForm1 = class(TForm)
@@ -23,7 +23,9 @@ type
     Series1: TGanttSeries;
     CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
-    procedure Button1Click(Sender: TObject);
+    TabControl1: TTabControl;
+    StringGrid1: TStringGrid;
+    Panel1: TPanel;
     procedure Button2Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
     procedure Chart1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -33,7 +35,7 @@ type
     procedure CheckBox1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure GroupBox1Click(Sender: TObject);
+    procedure TabControl1Change(Sender: TObject);
   private
 
     zlecenia : TZlecenia;
@@ -108,7 +110,12 @@ begin
 //            'czas trwania ' + IntToStr(etapZlecenia.CzasWykonaniaNetto));
 //    end;
 //  end;
-  for zlecenie in zlecenia do KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
+  for zlecenie in zlecenia do
+  begin
+    KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
+    TabControl1.Tabs.Add(IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA));
+  end;
+  self.TabControl1Change(TabControl1);
 
   for stanowisko in stanowiska do
   begin
@@ -154,6 +161,11 @@ begin
     print('Rozpoczecie ' + DateTimeToStr(ostatniEtap.DATA_START));
     print('Zakonczenie ' + DateTimeToStr(ostatniEtap.DATA_KONIEC));
   end;
+end;
+
+procedure TForm1.TabControl1Change(Sender: TObject);
+begin
+  Panel1.Color := KH.KolorDlaId(zlecenia.Items[TabControl1.TabIndex].daneZlecenia.ID_ZLECENIA);
 end;
 
 procedure TForm1.print(printString : String);

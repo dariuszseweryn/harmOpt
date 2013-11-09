@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 823
-  ClientWidth = 916
+  ClientHeight = 777
+  ClientWidth = 898
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,12 +19,12 @@ object Form1: TForm1
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 910
+    Width = 892
     Height = 54
     Align = alTop
     Caption = 'Ustawienia Harmonogramowania'
     TabOrder = 0
-    OnClick = GroupBox1Click
+    ExplicitWidth = 910
     object Button2: TButton
       Left = 16
       Top = 19
@@ -55,22 +55,25 @@ object Form1: TForm1
   object Memo1: TMemo
     AlignWithMargins = True
     Left = 3
-    Top = 63
-    Width = 910
-    Height = 335
+    Top = 651
+    Width = 892
+    Height = 125
     Align = alTop
+    BiDiMode = bdLeftToRight
     Lines.Strings = (
       'Memo1')
+    ParentBiDiMode = False
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitTop = 106
+    ExplicitTop = 644
+    ExplicitHeight = 118
   end
   object Chart1: TChart
     AlignWithMargins = True
     Left = 3
-    Top = 404
-    Width = 910
-    Height = 377
+    Top = 63
+    Width = 892
+    Height = 365
     BackWall.Brush.Gradient.Direction = gdBottomTop
     BackWall.Brush.Gradient.EndColor = clWhite
     BackWall.Brush.Gradient.StartColor = 15395562
@@ -91,6 +94,7 @@ object Form1: TForm1
     Title.Font.Name = 'Verdana'
     Title.Text.Strings = (
       'TChart')
+    AxisBehind = False
     BottomAxis.Axis.Color = 4210752
     BottomAxis.Grid.Color = 11119017
     BottomAxis.LabelsFont.Name = 'Verdana'
@@ -125,7 +129,9 @@ object Form1: TForm1
     TabOrder = 2
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseUp = Chart1MouseUp
-    ExplicitTop = 447
+    ExplicitTop = 404
+    ExplicitWidth = 644
+    ExplicitHeight = 350
     PrintMargins = (
       15
       33
@@ -140,8 +146,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 7028779
-      Pointer.Gradient.EndColor = 7028779
+      Pointer.Brush.Gradient.EndColor = 3513587
+      Pointer.Gradient.EndColor = 3513587
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15
@@ -162,6 +168,35 @@ object Form1: TForm1
       AllowResize = False
       Series = Series1
       OnDragBar = ChartTool1DragBar
+    end
+  end
+  object TabControl1: TTabControl
+    Left = 0
+    Top = 431
+    Width = 898
+    Height = 217
+    Align = alTop
+    TabOrder = 3
+    OnChange = TabControl1Change
+    ExplicitTop = 424
+    object StringGrid1: TStringGrid
+      Left = 4
+      Top = 63
+      Width = 890
+      Height = 150
+      Align = alBottom
+      TabOrder = 0
+      ExplicitTop = 39
+      ExplicitWidth = 853
+    end
+    object Panel1: TPanel
+      Left = 3
+      Top = 32
+      Width = 153
+      Height = 25
+      Caption = 'Kolor zlecenia'
+      ParentBackground = False
+      TabOrder = 1
     end
   end
   object ADOConnection1: TADOConnection
