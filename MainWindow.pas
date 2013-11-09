@@ -23,6 +23,7 @@ type
     ChartTool1: TGanttTool;
     Series1: TGanttSeries;
     CheckBox1: TCheckBox;
+    ComboBox1: TComboBox;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
@@ -54,6 +55,7 @@ var
   KH : TKolorHelper;
   Harmonogramator : THarmonogramator;
   LastDraggedBarNumber : Integer = -1;
+  drhArray : array[1..9] of TDyspozytorskaRegulaHarmonogramowania;
 
 implementation
 
@@ -64,52 +66,27 @@ var
   zlecenie : TZlecenie;
   etapZlecenia : TZlecenieEtap;
   stanowisko : TStanowisko;
-  start, stop, tempTime : TDateTime;
-  h, m, s, ms : Word;
-  I, J: Integer;
-  drhArray : array[1..1] of TDyspozytorskaRegulaHarmonogramowania;
   drh : TDyspozytorskaRegulaHarmonogramowania;
 begin
-//  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaSPTO.Create(CH);
-  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaSPTW.Create(CH);
-//  drhArray[2] := TDyspozytorskaRegulaHarmonogramowaniaEDDW.Create(CH);
-//  drhArray[3] := TDyspozytorskaRegulaHarmonogramowaniaMDD.Create(CH);
-//  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaMST.Create(CH);
-//  drhArray[5] := TDyspozytorskaRegulaHarmonogramowaniaSCRW.Create(CH);
-//  drhArray[6] := TDyspozytorskaRegulaHarmonogramowaniaAOPN.Create(CH);
-//  drhArray[7] := TDyspozytorskaRegulaHarmonogramowaniaSOPN.Create(CH);
-//  drhArray[8] := TDyspozytorskaRegulaHarmonogramowania1ST.Create(CH);
-
-  Series1.Clear;
-  if not (zlecenia = nil) then
+  if not (ComboBox1.ItemIndex = -1) then
   begin
-    zlecenia.Free;
-    stanowiska.Free;
-  end;
+    drh := ComboBox1.Items.Objects[ComboBox1.ItemIndex] as TDyspozytorskaRegulaHarmonogramowania;
 
-  zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
-  stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
-
-  for J := 1 to Length(drhArray) do
-  begin
-    drh := drhArray[J];
-    tempTime := 0;
-    for I := 0 to 1 do
+    Series1.Clear;
+    if not (zlecenia = nil) then
     begin
-      zlecenia.Czysc;
-      stanowiska.Czysc;
-
-      start := Now;
-      Harmonogramator.Harmonogramuj(zlecenia, stanowiska, drh);
-      stop := Now;
-
-      tempTime := tempTime + (stop - start);
+      zlecenia.Free;
+      stanowiska.Free;
     end;
-    DecodeTime(TimeOf(tempTime),h,m,s,ms);
-    print('Czas Harmonogramowania dla reguly ' + drh.NazwaReguly + ' = ' +
-          IntToStr(h) + 'h ' + IntToStr(m) + 'm ' +
-          IntToStr(s) + 's ' + IntToStr(ms) + 'ms');
-    drh.Free;
+
+    zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
+    stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
+
+    zlecenia.Czysc;
+    stanowiska.Czysc;
+
+    Harmonogramator.Harmonogramuj(zlecenia, stanowiska, drh);
+    print('Harmonogram dla reguly: ' + drh.NazwaReguly);
   end;
 
 //  for zlecenie in zlecenia do
@@ -232,15 +209,35 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  I: Integer;
 begin
   DBH := TDataBaseHelper.Create(ADOConnection1);
   CH := TCzasHelper.Create(EncodeTime(8,0,0,0),EncodeTime(16,0,0,0));
   KH := TKolorHelper.Create;
   Harmonogramator := THarmonogramator.Create(CH);
+  drhArray[1] := TDyspozytorskaRegulaHarmonogramowaniaSPTO.Create(CH);
+  drhArray[2] := TDyspozytorskaRegulaHarmonogramowaniaSPTW.Create(CH);
+  drhArray[3] := TDyspozytorskaRegulaHarmonogramowaniaEDDW.Create(CH);
+  drhArray[4] := TDyspozytorskaRegulaHarmonogramowaniaMDD.Create(CH);
+  drhArray[5] := TDyspozytorskaRegulaHarmonogramowaniaMST.Create(CH);
+  drhArray[6] := TDyspozytorskaRegulaHarmonogramowaniaSCRW.Create(CH);
+  drhArray[7] := TDyspozytorskaRegulaHarmonogramowaniaAOPN.Create(CH);
+  drhArray[8] := TDyspozytorskaRegulaHarmonogramowaniaSOPN.Create(CH);
+  drhArray[9] := TDyspozytorskaRegulaHarmonogramowania1ST.Create(CH);
+  for I := 1 to Length(drhArray) do
+  begin
+    ComboBox1.AddItem(drhArray[I].NazwaReguly, drhArray[I]);
+  end;
+  ComboBox1.ItemIndex := 0;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
+//var
+//  I: Integer;
 begin
+//  for I := 1 to Length(drhArray) do
+//    drhArray[1].Free;
 //  if not (DBH = nil) then DBH.Free;
 //  if not (CH = nil) then CH.Free;
 //  if not (zlecenia = nil) then zlecenia.Free;

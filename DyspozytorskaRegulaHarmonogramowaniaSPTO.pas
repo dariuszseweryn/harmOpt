@@ -6,7 +6,7 @@ uses
   DyspozytorskaRegulaHarmonogramowania, Etapy, ZlecenieEtap;
 
 type
-  TDyspozytorskaRegulaHarmonogramowaniaSPT = class(TDyspozytorskaRegulaHarmonogramowania)
+  TDyspozytorskaRegulaHarmonogramowaniaSPTO = class(TDyspozytorskaRegulaHarmonogramowania)
   public
     function WybierzZEtapy(etapy : TEtapy) : TZlecenieEtap; override;
     function NazwaReguly() : String; override;
@@ -14,7 +14,7 @@ type
 
 implementation
 
-  function TDyspozytorskaRegulaHarmonogramowaniaSPT.WybierzZEtapy(etapy: TEtapy) : TZlecenieEtap;
+  function TDyspozytorskaRegulaHarmonogramowaniaSPTO.WybierzZEtapy(etapy: TEtapy) : TZlecenieEtap;
   var
     etapZlecenia : TZlecenieEtap;
   begin
@@ -27,7 +27,7 @@ implementation
     end;
   end;
 
-  function TDyspozytorskaRegulaHarmonogramowaniaSPT.NazwaReguly;
+  function TDyspozytorskaRegulaHarmonogramowaniaSPTO.NazwaReguly;
   begin
     Result := 'SPT dla operacji';
   end;

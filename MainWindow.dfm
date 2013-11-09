@@ -51,6 +51,14 @@ object Form1: TForm1
       TabOrder = 2
       OnClick = CheckBox1Click
     end
+    object ComboBox1: TComboBox
+      Left = 216
+      Top = 23
+      Width = 209
+      Height = 21
+      TabOrder = 3
+      Text = 'ComboBox1'
+    end
   end
   object Memo1: TMemo
     AlignWithMargins = True
@@ -137,8 +145,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 1330417
-      Pointer.Gradient.EndColor = 1330417
+      Pointer.Brush.Gradient.EndColor = 10708548
+      Pointer.Gradient.EndColor = 10708548
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15

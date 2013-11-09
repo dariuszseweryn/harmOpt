@@ -45,7 +45,7 @@ implementation
   var
     stan : Int8;
     operacjeDoHarmonogramowania,
-      wszystkieOperacje,
+//      wszystkieOperacje,
       najwczesniejszeOperacje,
       operacjeTrwajaceNaMaszynach : TEtapy;
     najwczesniejszyCzasProponowany, najwczesniejszyCzasZakonczenia : TDateTime;
@@ -79,7 +79,7 @@ implementation
             operacja.DATA_PROPONOWANA := CzasHelper.DataCzasPracujacy(operacja.DataProponowana, true);
           end;
 
-          wszystkieOperacje := zlecenia.WszystkieNierozpoczeteEtapy(); // C
+//          wszystkieOperacje := zlecenia.WszystkieNierozpoczeteEtapy(); // C
           stan := 3;
         end;
         3:
@@ -109,7 +109,7 @@ implementation
           niezajetaMaszyna := niezajeteMaszyny.Items[0];
           niezajetaMaszyna.DodajEtap(operacja);
           operacjeDoHarmonogramowania.Remove(operacja);
-          wszystkieOperacje.Remove(operacja);
+//          wszystkieOperacje.Remove(operacja);
           najwczesniejszeOperacje.Remove(operacja);
           operacja.DATA_START := najwczesniejszyCzasProponowany;
           operacja.DATA_KONIEC := CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(najwczesniejszyCzasProponowany, operacja.CzasWykonaniaNetto);
@@ -181,10 +181,10 @@ implementation
         end;
         15:
         begin
-          if wszystkieOperacje.Count > 0 then stan := 3
+          if operacjeDoHarmonogramowania.Count > 0 then stan := 3
           else
           begin
-            wszystkieOperacje.Free(); // D
+//            wszystkieOperacje.Free(); // D
             operacjeDoHarmonogramowania.Free(); // D
             stan := 16;
           end;
