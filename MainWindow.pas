@@ -24,8 +24,10 @@ type
     CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
     TabControl1: TTabControl;
-    StringGrid1: TStringGrid;
     Panel1: TPanel;
+    DBGrid1: TDBGrid;
+    DataSource1: TDataSource;
+    ADOQuery1: TADOQuery;
     procedure Button2Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
     procedure Chart1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -164,8 +166,22 @@ begin
 end;
 
 procedure TForm1.TabControl1Change(Sender: TObject);
+var
+  zlecenie : TZlecenie;
 begin
-  Panel1.Color := KH.KolorDlaId(zlecenia.Items[TabControl1.TabIndex].daneZlecenia.ID_ZLECENIA);
+  zlecenie := zlecenia.Items[TabControl1.TabIndex];
+  Panel1.Color := KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
+  ADOQuery1.Close;
+  ADOQuery1.SQL.Clear;
+  ADOQuery1.SQL.Add('SELECT nr_etapu, id_rodzaje_stanowisk, id_stanowiska '+
+                    'FROM zlec_technologie_etapy '+
+                    'WHERE id_zlec_technologie = '+ IntToStr(zlecenie.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
+                    'ORDER BY nr_etapu asc');
+  ADOQuery1.Open;
+  DBGrid1.Columns.Items[0].ReadOnly := true;
+  DBGrid1.Columns.Items[1].ReadOnly := true;
+  DBGrid1.Columns.Items[2].ReadOnly := true;
+
 end;
 
 procedure TForm1.print(printString : String);

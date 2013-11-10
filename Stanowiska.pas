@@ -25,7 +25,7 @@ implementation
     stanowisko : TStanowisko;
   begin
     Result := TStanowiska.Create(False);
-    if not etapZlecenia.ID_STANOWISKA = 0 then
+    if not (etapZlecenia.ID_STANOWISKA = 0) then
       begin
         for stanowisko in self do
           if stanowisko.ID_STANOWISKA = etapZlecenia.ID_STANOWISKA then

@@ -24,7 +24,6 @@ object Form1: TForm1
     Align = alTop
     Caption = 'Ustawienia Harmonogramowania'
     TabOrder = 0
-    ExplicitWidth = 910
     object Button2: TButton
       Left = 16
       Top = 19
@@ -65,8 +64,6 @@ object Form1: TForm1
     ParentBiDiMode = False
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitTop = 644
-    ExplicitHeight = 118
   end
   object Chart1: TChart
     AlignWithMargins = True
@@ -129,9 +126,6 @@ object Form1: TForm1
     TabOrder = 2
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseUp = Chart1MouseUp
-    ExplicitTop = 404
-    ExplicitWidth = 644
-    ExplicitHeight = 350
     PrintMargins = (
       15
       33
@@ -146,8 +140,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 3513587
-      Pointer.Gradient.EndColor = 3513587
+      Pointer.Brush.Gradient.EndColor = 919731
+      Pointer.Gradient.EndColor = 919731
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15
@@ -178,17 +172,6 @@ object Form1: TForm1
     Align = alTop
     TabOrder = 3
     OnChange = TabControl1Change
-    ExplicitTop = 424
-    object StringGrid1: TStringGrid
-      Left = 4
-      Top = 63
-      Width = 890
-      Height = 150
-      Align = alBottom
-      TabOrder = 0
-      ExplicitTop = 39
-      ExplicitWidth = 853
-    end
     object Panel1: TPanel
       Left = 3
       Top = 32
@@ -196,8 +179,21 @@ object Form1: TForm1
       Height = 25
       Caption = 'Kolor zlecenia'
       ParentBackground = False
-      TabOrder = 1
+      TabOrder = 0
     end
+  end
+  object DBGrid1: TDBGrid
+    Left = 3
+    Top = 494
+    Width = 887
+    Height = 151
+    DataSource = DataSource1
+    TabOrder = 4
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -11
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
   end
   object ADOConnection1: TADOConnection
     Connected = True
@@ -210,5 +206,20 @@ object Form1: TForm1
     Provider = 'SQLOLEDB.1'
     Left = 672
     Top = 24
+  end
+  object DataSource1: TDataSource
+    DataSet = ADOQuery1
+    Left = 784
+    Top = 456
+  end
+  object ADOQuery1: TADOQuery
+    Active = True
+    Connection = ADOConnection1
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'select * from zlecenia')
+    Left = 712
+    Top = 448
   end
 end
