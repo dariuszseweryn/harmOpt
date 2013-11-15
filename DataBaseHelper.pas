@@ -37,6 +37,7 @@ implementation
   begin
     Query1 := TQueryHelper.HelperWithConnection(connection);
     Query2 := TQueryHelper.HelperWithConnection(connection);
+    PrzygotujBazeDoZapisaniaHarmonogramowanychEtapow;
   end;
 
 //  destructor TDataBaseHelper.Free;
@@ -47,7 +48,12 @@ implementation
 
   procedure TDataBaseHelper.PrzygotujBazeDoZapisaniaHarmonogramowanychEtapow;
   begin
-
+    if not (CzyKolumnaIstniejeWTabeli('DATA_ROZPOCZECIA', 'ZLEC_TECHNOLOGIE_ETAPY')) then
+      DodajKolumneDoTabeli('DATA_ROZPOCZECIA', 'ZLEC_TECHNOLOGIE_ETAPY', 'DATETIME');
+    if not (CzyKolumnaIstniejeWTabeli('DATA_ZAKONCZENIA', 'ZLEC_TECHNOLOGIE_ETAPY')) then
+      DodajKolumneDoTabeli('DATA_ZAKONCZENIA', 'ZLEC_TECHNOLOGIE_ETAPY', 'DATETIME');
+    if not (CzyKolumnaIstniejeWTabeli('ID_STANOWISKA_PRZYDZIELNIE', 'ZLEC_TECHNOLOGIE_ETAPY')) then
+      DodajKolumneDoTabeli('ID_STANOWISKA_PRZYDZIELNIE', 'ZLEC_TECHNOLOGIE_ETAPY', 'INT');
   end;
 
   procedure TDataBaseHelper.CofnijPrzygotowanieBazyDoZapisaniaHarmonogramowanychEtapow;
