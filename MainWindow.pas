@@ -117,7 +117,6 @@ begin
     KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
     TabControl1.Tabs.Add(IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA));
   end;
-  self.TabControl1Change(TabControl1);
 
   for stanowisko in stanowiska do
   begin
@@ -128,11 +127,12 @@ begin
                                                     stanowiska.IndexOf(stanowisko),
                                                     stanowisko.NAZ_STANOWISKA,
                                                     KH.KolorDlaId(etapZlecenia.daneZlecenia.ID_ZLECENIA));
+      DBH.ZapiszEtap(etapZlecenia, stanowisko.ID_STANOWISKA);
     end;
   end;
 
   zlecenia.PolaczKolejneEtapyZlecenWSerii(Series1);
-
+  self.TabControl1Change(TabControl1);
 end;
 
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
@@ -173,7 +173,7 @@ begin
   Panel1.Color := KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
   ADOQuery1.Close;
   ADOQuery1.SQL.Clear;
-  ADOQuery1.SQL.Add('SELECT nr_etapu, id_rodzaje_stanowisk, id_stanowiska '+
+  ADOQuery1.SQL.Add('SELECT nr_etapu, id_rodzaje_stanowisk, id_stanowiska, data_rozpoczecia, data_zakonczenia, id_stanowiska_przydzielenie '+
                     'FROM zlec_technologie_etapy '+
                     'WHERE id_zlec_technologie = '+ IntToStr(zlecenie.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
                     'ORDER BY nr_etapu asc');

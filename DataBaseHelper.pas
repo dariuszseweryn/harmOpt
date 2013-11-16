@@ -24,6 +24,7 @@ type
 
     function WyciagnijZleceniaDoHarmonogramowania : TZlecenia;
     function WyciagnijStanowiskaDoHarmonogramowania : TStanowiska;
+    procedure ZapiszEtap(etap : TZlecenieEtap; id_stanowiska : Integer);
 
   end;
 
@@ -52,8 +53,8 @@ implementation
       DodajKolumneDoTabeli('DATA_ROZPOCZECIA', 'ZLEC_TECHNOLOGIE_ETAPY', 'DATETIME');
     if not (CzyKolumnaIstniejeWTabeli('DATA_ZAKONCZENIA', 'ZLEC_TECHNOLOGIE_ETAPY')) then
       DodajKolumneDoTabeli('DATA_ZAKONCZENIA', 'ZLEC_TECHNOLOGIE_ETAPY', 'DATETIME');
-    if not (CzyKolumnaIstniejeWTabeli('ID_STANOWISKA_PRZYDZIELNIE', 'ZLEC_TECHNOLOGIE_ETAPY')) then
-      DodajKolumneDoTabeli('ID_STANOWISKA_PRZYDZIELNIE', 'ZLEC_TECHNOLOGIE_ETAPY', 'INT');
+    if not (CzyKolumnaIstniejeWTabeli('ID_STANOWISKA_PRZYDZIELENIE', 'ZLEC_TECHNOLOGIE_ETAPY')) then
+      DodajKolumneDoTabeli('ID_STANOWISKA_PRZYDZIELENIE', 'ZLEC_TECHNOLOGIE_ETAPY', 'INT');
   end;
 
   procedure TDataBaseHelper.CofnijPrzygotowanieBazyDoZapisaniaHarmonogramowanychEtapow;
@@ -154,6 +155,11 @@ implementation
       Query1.Query.Next;
     end;
     Result := stanowiska;
+  end;
+
+  procedure TDataBaseHelper.ZapiszEtap(etap : TZlecenieEtap; id_stanowiska : Integer);
+  begin
+    etap.ZapiszSie(Query1.Query, id_stanowiska);
   end;
 
 end.

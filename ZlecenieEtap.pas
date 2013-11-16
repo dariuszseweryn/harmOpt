@@ -3,7 +3,7 @@ unit ZlecenieEtap;
 interface
 
 uses
-  Data.Win.ADODB, System.Math, ZlecenieDane;
+  Data.Win.ADODB, System.SysUtils, System.Math, ZlecenieDane;
 
 type
   TZlecenieEtap = class
@@ -29,6 +29,7 @@ type
   daneZlecenia : TZlecenieDane;
 
   procedure UstawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
+  procedure ZapiszSie(query1 : TADOQuery; id_stanowiska : Integer);
   procedure Czysc;
   function CzasWykonaniaNetto() : Integer;
   function PierwszyEtap() : TZlecenieEtap;
@@ -51,6 +52,21 @@ implementation
     poprzedniEtap := nil;
     nastepnyEtap := nil;
     daneZlecenia := nil;
+  end;
+
+  procedure TZlecenieEtap.ZapiszSie(query1 : TADOQuery; id_stanowiska : Integer);
+  begin
+    query1.SQL.Text := 'SELECT data_rozpoczecia, data_zakonczenia, id_stanowiska_przydzielenie '+
+                       'FROM zlec_technologie_etapy '+
+                       'WHERE id_zlec_technologie = '+ IntToStr(daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
+                       'AND nr_etapu = ' + IntToStr(NR_ETAPU);
+    query1.Open;
+    query1.Edit;
+    query1.Fields[0].AsDateTime := DATA_START;
+    query1.Fields[1].AsDateTime := DATA_KONIEC;
+    query1.Fields[2].AsInteger := id_stanowiska;
+    query1.Post;
+    query1.Close
   end;
 
   procedure TZlecenieEtap.Czysc;
