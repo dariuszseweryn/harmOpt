@@ -181,6 +181,8 @@ begin
   DBGrid1.Columns.Items[0].ReadOnly := true;
   DBGrid1.Columns.Items[1].ReadOnly := true;
   DBGrid1.Columns.Items[2].ReadOnly := true;
+  DBGrid1.Width := DBGrid1.Width - 1;
+  DBGrid1.Width := DBGrid1.Width + 1;
 
 end;
 

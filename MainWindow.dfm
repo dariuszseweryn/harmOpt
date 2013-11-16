@@ -54,7 +54,7 @@ object Form1: TForm1
   object Memo1: TMemo
     AlignWithMargins = True
     Left = 3
-    Top = 651
+    Top = 644
     Width = 892
     Height = 125
     Align = alTop
@@ -64,6 +64,7 @@ object Form1: TForm1
     ParentBiDiMode = False
     ScrollBars = ssVertical
     TabOrder = 1
+    ExplicitTop = 651
   end
   object Chart1: TChart
     AlignWithMargins = True
@@ -168,32 +169,37 @@ object Form1: TForm1
     Left = 0
     Top = 431
     Width = 898
-    Height = 217
+    Height = 210
     Align = alTop
     TabOrder = 3
     OnChange = TabControl1Change
     object Panel1: TPanel
-      Left = 3
-      Top = 32
-      Width = 153
+      Left = 4
+      Top = 30
+      Width = 890
       Height = 25
+      Align = alBottom
       Caption = 'Kolor zlecenia'
       ParentBackground = False
       TabOrder = 0
+      ExplicitLeft = 19
+      ExplicitTop = 24
+      ExplicitWidth = 153
     end
-  end
-  object DBGrid1: TDBGrid
-    Left = 3
-    Top = 494
-    Width = 887
-    Height = 151
-    DataSource = DataSource1
-    TabOrder = 4
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -11
-    TitleFont.Name = 'Tahoma'
-    TitleFont.Style = []
+    object DBGrid1: TDBGrid
+      Left = 4
+      Top = 55
+      Width = 890
+      Height = 151
+      Align = alBottom
+      DataSource = DataSource1
+      TabOrder = 1
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
+    end
   end
   object ADOConnection1: TADOConnection
     Connected = True
