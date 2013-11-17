@@ -28,6 +28,7 @@ type
     DBGrid1: TDBGrid;
     DataSource1: TDataSource;
     ADOQuery1: TADOQuery;
+    StringGrid1: TStringGrid;
     procedure Button2Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
     procedure Chart1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -38,6 +39,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure TabControl1Change(Sender: TObject);
+    procedure AutoSizeCol(Grid: TStringGrid; Column: integer);
   private
 
     zlecenia : TZlecenia;
@@ -168,6 +170,9 @@ end;
 procedure TForm1.TabControl1Change(Sender: TObject);
 var
   zlecenie : TZlecenie;
+  sl : TStringList;
+  etap : TZlecenieEtap;
+  i : Integer;
 begin
   zlecenie := zlecenia.Items[TabControl1.TabIndex];
   Panel1.Color := KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
@@ -181,9 +186,29 @@ begin
   DBGrid1.Columns.Items[0].ReadOnly := true;
   DBGrid1.Columns.Items[1].ReadOnly := true;
   DBGrid1.Columns.Items[2].ReadOnly := true;
+  // Hack for having scrollbars visible
   DBGrid1.Width := DBGrid1.Width - 1;
   DBGrid1.Width := DBGrid1.Width + 1;
+  StringGrid1.RowCount := 1;
+  sl := TStringList.Create;
+  for etap in zlecenie do
+  begin
+    sl.Clear;
 
+    sl.Add(IntToStr(etap.NR_ETAPU));
+    sl.Add(IntToStr(etap.ID_RODZAJE_STANOWISK));
+    sl.Add(IntToStr(etap.ID_STANOWISKA));
+    sl.Add(DateTimeToStr(etap.DATA_START));
+    sl.Add(DateTimeToStr(etap.DATA_KONIEC));
+
+    i := StringGrid1.RowCount;
+    StringGrid1.RowCount := i + 1;
+    StringGrid1.Rows[i].Clear;
+    StringGrid1.Rows[i].AddStrings(sl);
+  end;
+  sl.Free;
+  for i := 0 to StringGrid1.ColCount - 1 do
+    AutoSizeCol(StringGrid1, i);
 end;
 
 procedure TForm1.print(printString : String);
@@ -239,6 +264,14 @@ begin
     ComboBox1.AddItem(drhArray[I].NazwaReguly, drhArray[I]);
   end;
   ComboBox1.ItemIndex := 0;
+
+  StringGrid1.Cols[0].Add('nr_etapu');
+  StringGrid1.Cols[1].Add('id_stanowiska');
+  StringGrid1.Cols[2].Add('id_rodzaje_stanowisk');
+  StringGrid1.Cols[3].Add('data_rozpoczecia');
+  StringGrid1.Cols[4].Add('data_zakonczenia');
+  StringGrid1.Cols[5].Add('id_stanowiska_przydzielenie');
+  // TODO: add machine
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -254,6 +287,19 @@ begin
 //  if not (Harmonogramator = nil) then Harmonogramator.Free;
 
 //  DBH.Free;
+end;
+
+procedure TForm1.AutoSizeCol(Grid: TStringGrid; Column: integer);
+var
+  i, W, WMax: integer;
+begin
+  WMax := 0;
+  for i := 0 to (Grid.RowCount - 1) do begin
+    W := Grid.Canvas.TextWidth(Grid.Cells[Column, i]);
+    if W > WMax then
+      WMax := W;
+  end;
+  Grid.ColWidths[Column] := WMax + 10;
 end;
 
 end.

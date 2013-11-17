@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 777
+  ClientHeight = 951
   ClientWidth = 898
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -54,7 +54,7 @@ object Form1: TForm1
   object Memo1: TMemo
     AlignWithMargins = True
     Left = 3
-    Top = 644
+    Top = 836
     Width = 892
     Height = 125
     Align = alTop
@@ -64,14 +64,14 @@ object Form1: TForm1
     ParentBiDiMode = False
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitTop = 651
+    ExplicitTop = 644
   end
   object Chart1: TChart
     AlignWithMargins = True
     Left = 3
     Top = 63
     Width = 892
-    Height = 365
+    Height = 442
     BackWall.Brush.Gradient.Direction = gdBottomTop
     BackWall.Brush.Gradient.EndColor = clWhite
     BackWall.Brush.Gradient.StartColor = 15395562
@@ -127,6 +127,7 @@ object Form1: TForm1
     TabOrder = 2
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseUp = Chart1MouseUp
+    ExplicitHeight = 194
     PrintMargins = (
       15
       33
@@ -141,8 +142,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 10401629
-      Pointer.Gradient.EndColor = 10401629
+      Pointer.Brush.Gradient.EndColor = 11842740
+      Pointer.Gradient.EndColor = 11842740
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15
@@ -167,30 +168,29 @@ object Form1: TForm1
   end
   object TabControl1: TTabControl
     Left = 0
-    Top = 431
+    Top = 508
     Width = 898
-    Height = 210
+    Height = 325
     Align = alTop
     TabOrder = 3
     OnChange = TabControl1Change
+    ExplicitTop = 520
     object Panel1: TPanel
       Left = 4
-      Top = 30
+      Top = 23
       Width = 890
-      Height = 25
+      Height = 29
       Align = alBottom
       Caption = 'Kolor zlecenia'
       ParentBackground = False
       TabOrder = 0
-      ExplicitLeft = 19
-      ExplicitTop = 24
-      ExplicitWidth = 153
+      ExplicitTop = 176
     end
     object DBGrid1: TDBGrid
       Left = 4
-      Top = 55
+      Top = 169
       Width = 890
-      Height = 151
+      Height = 152
       Align = alBottom
       DataSource = DataSource1
       TabOrder = 1
@@ -199,6 +199,19 @@ object Form1: TForm1
       TitleFont.Height = -11
       TitleFont.Name = 'Tahoma'
       TitleFont.Style = []
+    end
+    object StringGrid1: TStringGrid
+      Left = 4
+      Top = 52
+      Width = 890
+      Height = 117
+      Align = alBottom
+      RowCount = 1
+      FixedRows = 0
+      Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
+      TabOrder = 2
+      ExplicitLeft = 19
+      ExplicitTop = 46
     end
   end
   object ADOConnection1: TADOConnection
