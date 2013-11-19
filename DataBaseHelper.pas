@@ -24,7 +24,7 @@ type
 
     function WyciagnijZleceniaDoHarmonogramowania : TZlecenia;
     function WyciagnijStanowiskaDoHarmonogramowania : TStanowiska;
-    procedure ZapiszEtap(etap : TZlecenieEtap; id_stanowiska : Integer);
+    procedure ZapiszEtap(etap : TZlecenieEtap);
 
   end;
 
@@ -157,9 +157,9 @@ implementation
     Result := stanowiska;
   end;
 
-  procedure TDataBaseHelper.ZapiszEtap(etap : TZlecenieEtap; id_stanowiska : Integer);
+  procedure TDataBaseHelper.ZapiszEtap(etap : TZlecenieEtap);
   begin
-    etap.ZapiszSie(Query1.Query, id_stanowiska);
+    etap.ZapiszSie(Query1.Query);
   end;
 
 end.

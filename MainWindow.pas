@@ -29,6 +29,7 @@ type
     DataSource1: TDataSource;
     ADOQuery1: TADOQuery;
     StringGrid1: TStringGrid;
+    SaveToDBButton: TButton;
     procedure Button2Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
     procedure Chart1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -40,6 +41,10 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure TabControl1Change(Sender: TObject);
     procedure AutoSizeCol(Grid: TStringGrid; Column: integer);
+    procedure PrzydzielEtapyDoStanowisk;
+    procedure NaniesEtapyZeStanowiskNaWykres;
+    procedure ZbudujKoloryITaby;
+    procedure SaveToDBButtonClick(Sender: TObject);
   private
 
     zlecenia : TZlecenia;
@@ -79,14 +84,6 @@ begin
     drh := ComboBox1.Items.Objects[ComboBox1.ItemIndex] as TDyspozytorskaRegulaHarmonogramowania;
 
     Series1.Clear;
-    if not (zlecenia = nil) then
-    begin
-      zlecenia.Free;
-      stanowiska.Free;
-    end;
-
-    zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
-    stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
 
     zlecenia.Czysc;
     stanowiska.Czysc;
@@ -95,46 +92,18 @@ begin
     print('Harmonogram dla reguly: ' + drh.NazwaReguly);
   end;
 
-//  for zlecenie in zlecenia do
-//  begin
-//    print(#13#10 + '====== zlecenie ======');
-//    print('ID_ZLECENIA ' + IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA) + ' ' +
-//          'ID_ZLEC_TECHNOLOGIE ' + IntToStr(zlecenie.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
-//          'ILOSC_ZLECONA ' + IntToStr(zlecenie.daneZlecenia.ILOSC_ZLECONA) + #13#10 +
-//          'PLAN_DATA_ROZPOCZECIA ' + DateTimeToStr(zlecenie.daneZlecenia.PLAN_DATA_ROZPOCZECIA) + ' ' +
-//          'PLAN_TERMIN_REALIZACJI ' + DateTimeToStr(zlecenie.daneZlecenia.PLAN_TERMIN_REALIZACJI));
-//    print('====== etapy ======');
-//    for etapZlecenia in zlecenie do
-//    begin
-//      print('NR_ETAPU ' + IntToStr(etapZlecenia.NR_ETAPU) + ' ' +
-//            'TPZ_M ' + IntToStr(etapZlecenia.TPZ_M) + ' ' +
-//            'TJ_M ' + IntToStr(etapZlecenia.TJ_M) + ' ' +
-//            'ID_STANOWISKA ' + IntToStr(etapZlecenia.ID_STANOWISKA) + ' ' +
-//            'ID_RODZAJE_STANOWISK ' + IntToStr(etapZlecenia.ID_RODZAJE_STANOWISK) + ' ' +
-//            'czas trwania ' + IntToStr(etapZlecenia.CzasWykonaniaNetto));
-//    end;
-//  end;
-  for zlecenie in zlecenia do
-  begin
-    KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
-    TabControl1.Tabs.Add(IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA));
-  end;
-
-  for stanowisko in stanowiska do
-  begin
-    for etapZlecenia in stanowisko.listaEtapow do
-    begin
-      etapZlecenia.ganttID := Series1.AddGanttColor(etapZlecenia.DATA_START,
-                                                    etapZlecenia.DATA_KONIEC,
-                                                    stanowiska.IndexOf(stanowisko),
-                                                    stanowisko.NAZ_STANOWISKA,
-                                                    KH.KolorDlaId(etapZlecenia.daneZlecenia.ID_ZLECENIA));
-      DBH.ZapiszEtap(etapZlecenia, stanowisko.ID_STANOWISKA);
-    end;
-  end;
-
-  zlecenia.PolaczKolejneEtapyZlecenWSerii(Series1);
+  NaniesEtapyZeStanowiskNaWykres;
   self.TabControl1Change(TabControl1);
+end;
+
+procedure TForm1.SaveToDBButtonClick(Sender: TObject);
+var
+  zlecenie : TZlecenie;
+  etap : TZlecenieEtap;
+begin
+  for zlecenie in zlecenia do
+    for etap in zlecenie do
+      DBH.ZapiszEtap(etap);
 end;
 
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
@@ -152,18 +121,18 @@ begin
     print('Zakonczenie ' + DateTimeToStr(kliknietyEtapZlecenia.daneZlecenia.PLAN_TERMIN_REALIZACJI));
     print('==== ETAP ZLECENIA =====');
     print('NR_ETAPU ' + IntToStr(kliknietyEtapZlecenia.NR_ETAPU));
-    print('Rozpoczecie ' + DateTimeToStr(kliknietyEtapZlecenia.DATA_START));
-    print('Zakonczenie ' + DateTimeToStr(kliknietyEtapZlecenia.DATA_KONIEC));
+    print('Rozpoczecie ' + DateTimeToStr(kliknietyEtapZlecenia.DATA_ROZPOCZECIA));
+    print('Zakonczenie ' + DateTimeToStr(kliknietyEtapZlecenia.DATA_ZAKONCZENIA));
     print('==== PIERWSZY ETAP =====');
     pierwszyEtap := kliknietyEtapZlecenia.PierwszyEtap;
     print('NR_ETAPU ' + IntToStr(pierwszyEtap.NR_ETAPU));
-    print('Rozpoczecie ' + DateTimeToStr(pierwszyEtap.DATA_START));
-    print('Zakonczenie ' + DateTimeToStr(pierwszyEtap.DATA_KONIEC));
+    print('Rozpoczecie ' + DateTimeToStr(pierwszyEtap.DATA_ROZPOCZECIA));
+    print('Zakonczenie ' + DateTimeToStr(pierwszyEtap.DATA_ZAKONCZENIA));
     print('===== OSTATNI ETAP =====');
     ostatniEtap := kliknietyEtapZlecenia.OstatniEtap;
     print('NR_ETAPU ' + IntToStr(ostatniEtap.NR_ETAPU));
-    print('Rozpoczecie ' + DateTimeToStr(ostatniEtap.DATA_START));
-    print('Zakonczenie ' + DateTimeToStr(ostatniEtap.DATA_KONIEC));
+    print('Rozpoczecie ' + DateTimeToStr(ostatniEtap.DATA_ROZPOCZECIA));
+    print('Zakonczenie ' + DateTimeToStr(ostatniEtap.DATA_ZAKONCZENIA));
   end;
 end;
 
@@ -197,9 +166,22 @@ begin
 
     sl.Add(IntToStr(etap.NR_ETAPU));
     sl.Add(IntToStr(etap.ID_RODZAJE_STANOWISK));
-    sl.Add(IntToStr(etap.ID_STANOWISKA));
-    sl.Add(DateTimeToStr(etap.DATA_START));
-    sl.Add(DateTimeToStr(etap.DATA_KONIEC));
+    if not (etap.ID_STANOWISKA = 0) then
+      sl.Add(IntToStr(etap.ID_STANOWISKA))
+    else
+      sl.Add(' ');
+    if not (etap.DATA_ROZPOCZECIA = 0) then
+      sl.Add(DateTimeToStr(etap.DATA_ROZPOCZECIA))
+    else
+      sl.Add(' ');
+    if not (etap.DATA_ZAKONCZENIA = 0) then
+      sl.Add(DateTimeToStr(etap.DATA_ZAKONCZENIA))
+    else
+      sl.Add(' ');
+    if not (etap.ID_STANOWISKA_PRZYDZIELENIE = 0) then
+      sl.Add(IntToStr(etap.ID_STANOWISKA_PRZYDZIELENIE))
+    else
+      sl.Add(' ');
 
     i := StringGrid1.RowCount;
     StringGrid1.RowCount := i + 1;
@@ -245,6 +227,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 var
   I: Integer;
+  zlecenie: TZlecenie;
 begin
   DBH := TDataBaseHelper.Create(ADOConnection1);
   CH := TCzasHelper.Create(EncodeTime(8,0,0,0),EncodeTime(16,0,0,0));
@@ -271,6 +254,15 @@ begin
   StringGrid1.Cols[3].Add('data_rozpoczecia');
   StringGrid1.Cols[4].Add('data_zakonczenia');
   StringGrid1.Cols[5].Add('id_stanowiska_przydzielenie');
+
+  zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
+  stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
+
+  ZbudujKoloryITaby;
+
+  PrzydzielEtapyDoStanowisk;
+  NaniesEtapyZeStanowiskNaWykres;
+  self.TabControl1Change(TabControl1);
   // TODO: add machine
 end;
 
@@ -300,6 +292,57 @@ begin
       WMax := W;
   end;
   Grid.ColWidths[Column] := WMax + 10;
+end;
+
+procedure TForm1.PrzydzielEtapyDoStanowisk;
+var
+  etap : TZlecenieEtap;
+  zlecenie : TZlecenie;
+begin
+  for zlecenie in zlecenia do
+    for etap in zlecenie do
+      if (
+        ( not (etap.ID_STANOWISKA_PRZYDZIELENIE = 0)) and
+        ( not (etap.DATA_ROZPOCZECIA = 0)) and
+        ( not (etap.DATA_ZAKONCZENIA = 0))
+      ) then
+        stanowiska.StanowiskoZId(etap.ID_STANOWISKA_PRZYDZIELENIE).DodajEtap(etap);
+end;
+
+procedure TForm1.NaniesEtapyZeStanowiskNaWykres;
+var
+  stanowisko : TStanowisko;
+  etapZlecenia : TZlecenieEtap;
+begin
+  for stanowisko in stanowiska do
+  begin
+    for etapZlecenia in stanowisko.listaEtapow do
+    begin
+      if (
+        not (etapZlecenia.DATA_ROZPOCZECIA = 0) and
+        not (etapZlecenia.DATA_ZAKONCZENIA = 0) and
+        not (etapZlecenia.ID_STANOWISKA_PRZYDZIELENIE = 0)) then
+        begin
+          etapZlecenia.ganttID := Series1.AddGanttColor(etapZlecenia.DATA_ROZPOCZECIA,
+                                                    etapZlecenia.DATA_ZAKONCZENIA,
+                                                    stanowiska.IndexOf(stanowisko),
+                                                    stanowisko.NAZ_STANOWISKA,
+                                                    KH.KolorDlaId(etapZlecenia.daneZlecenia.ID_ZLECENIA));
+        end;
+    end;
+  end;
+  zlecenia.PolaczKolejneEtapyZlecenWSerii(Series1);
+end;
+
+procedure TForm1.ZbudujKoloryITaby;
+var
+  zlecenie : TZlecenie;
+begin
+  for zlecenie in zlecenia do
+  begin
+    KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
+    TabControl1.Tabs.Add(IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA));
+  end;
 end;
 
 end.

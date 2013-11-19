@@ -52,6 +52,7 @@ implementation
 
   procedure TStanowisko.DodajEtap(etapZlecenia : TZlecenieEtap);
   begin
+    etapZlecenia.ID_STANOWISKA_PRZYDZIELENIE := ID_STANOWISKA;
     listaEtapow.Add(etapZlecenia);
   end;
 
@@ -91,9 +92,9 @@ implementation
 
     for etapZlecenia in listaEtapow do
     begin
-      if ((etapZlecenia.DATA_START >= potencjalnyStart) and (etapZlecenia.DATA_START <= potencjalnyKoniec)) or
-        ((etapZlecenia.DATA_KONIEC >= potencjalnyStart) and (etapZlecenia.DATA_KONIEC <= potencjalnyKoniec)) or
-        ((etapZlecenia.DATA_START <= potencjalnyStart) and (etapZlecenia.DATA_KONIEC >= potencjalnyKoniec)) then
+      if ((etapZlecenia.DATA_ROZPOCZECIA >= potencjalnyStart) and (etapZlecenia.DATA_ROZPOCZECIA <= potencjalnyKoniec)) or
+        ((etapZlecenia.DATA_ZAKONCZENIA >= potencjalnyStart) and (etapZlecenia.DATA_ZAKONCZENIA <= potencjalnyKoniec)) or
+        ((etapZlecenia.DATA_ROZPOCZECIA <= potencjalnyStart) and (etapZlecenia.DATA_ZAKONCZENIA >= potencjalnyKoniec)) then
           listaEtapowPomiedzy.Add(etapZlecenia);
     end;
 
@@ -101,7 +102,7 @@ implementation
 
     for etapZlecenia in listaEtapowPomiedzy do
     begin
-      if etapZlecenia.DATA_KONIEC > Result then Result := etapZlecenia.DATA_KONIEC;
+      if etapZlecenia.DATA_ZAKONCZENIA > Result then Result := etapZlecenia.DATA_ZAKONCZENIA;
     end;
 
   end;
@@ -113,8 +114,8 @@ implementation
     Result := True;
     for zlecenieEtap in listaEtapow do
     begin
-      if (zlecenieEtap.DATA_START <= czas)
-        and (zlecenieEtap.DATA_KONIEC >= czas)
+      if (zlecenieEtap.DATA_ROZPOCZECIA <= czas)
+        and (zlecenieEtap.DATA_ZAKONCZENIA >= czas)
           then Result := False;
     end;
   end;
@@ -126,8 +127,8 @@ implementation
     Result := nil;
     for zlecenieEtap in listaEtapow do
     begin
-      if (zlecenieEtap.DATA_START <= czas)
-        and (zlecenieEtap.DATA_KONIEC >= czas)
+      if (zlecenieEtap.DATA_ROZPOCZECIA <= czas)
+        and (zlecenieEtap.DATA_ZAKONCZENIA >= czas)
           then Result := zlecenieEtap;
     end;
   end;
@@ -139,8 +140,8 @@ implementation
     Result := 0;
     for zlecenieEtap in listaEtapow do
     begin
-      if Result < zlecenieEtap.DATA_KONIEC then
-        Result := zlecenieEtap.DATA_KONIEC;
+      if Result < zlecenieEtap.DATA_ZAKONCZENIA then
+        Result := zlecenieEtap.DATA_ZAKONCZENIA;
     end;
   end;
 

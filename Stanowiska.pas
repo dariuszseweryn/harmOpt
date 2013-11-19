@@ -14,6 +14,7 @@ type
     function StanowiskaNieZnajdujaceSieW(stanowiska : TStanowiska) : TStanowiska;
     function StanowiskoDoKtoregoJestPrzydzielonyEtap(etapZlecenia : TZlecenieEtap) : TStanowisko;
     function CzasZakonczeniaNajwczesniejszejZOstatnichOperacji() : TDateTime;
+    function StanowiskoZId(id_stanowiska : Integer) : TStanowisko;
     procedure Czysc;
   end;
 
@@ -117,6 +118,13 @@ implementation
       if Result > czasZakonczeniaEtapu then
         Result := IncMinute(czasZakonczeniaEtapu,1);
     end;
+  end;
+
+  function TStanowiska.StanowiskoZId(id_stanowiska : Integer) : TStanowisko;
+  begin
+    for Result in self do
+      if Result.ID_STANOWISKA = id_stanowiska then
+        break;
   end;
 
   procedure TStanowiska.Czysc;

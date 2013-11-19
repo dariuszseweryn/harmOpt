@@ -16,10 +16,11 @@ type
   TJ_M : Extended;
   ID_STANOWISKA : Integer;
   ID_RODZAJE_STANOWISK : Integer;
+  ID_STANOWISKA_PRZYDZIELENIE : Integer;
   rozpoczety : Boolean;
   // info nt. czasu zajecia stanowiska
-  DATA_START : TDateTime;
-  DATA_KONIEC : TDateTime;
+  DATA_ROZPOCZECIA : TDateTime;
+  DATA_ZAKONCZENIA : TDateTime;
   DATA_PROPONOWANA : TDateTime;
   // info nt. kolejnosci dodania do wykresu Gantta
   ganttID : Integer;
@@ -29,7 +30,7 @@ type
   daneZlecenia : TZlecenieDane;
 
   procedure UstawDlaQueryZeZlecTechnologieEtapy(query : TADOQuery);
-  procedure ZapiszSie(query1 : TADOQuery; id_stanowiska : Integer);
+  procedure ZapiszSie(query1 : TADOQuery);
   procedure Czysc;
   function CzasWykonaniaNetto() : Integer;
   function PierwszyEtap() : TZlecenieEtap;
@@ -47,6 +48,12 @@ implementation
     TJ_M := query.FieldByName('TJ_M').AsExtended;
     ID_STANOWISKA := query.FieldByName('ID_STANOWISKA').AsInteger;
     ID_RODZAJE_STANOWISK := query.FieldByName('ID_RODZAJE_STANOWISK').AsInteger;
+    if not (query.FieldByName('ID_STANOWISKA_PRZYDZIELENIE').IsNull) then
+      ID_STANOWISKA_PRZYDZIELENIE := query.FieldByName('ID_STANOWISKA_PRZYDZIELENIE').AsInteger;
+    if not (query.FieldByName('DATA_ROZPOCZECIA').IsNull) then
+      DATA_ROZPOCZECIA := query.FieldByName('DATA_ROZPOCZECIA').AsDateTime;
+    if not (query.FieldByName('DATA_ZAKONCZENIA').IsNull) then
+      DATA_ZAKONCZENIA := query.FieldByName('DATA_ZAKONCZENIA').AsDateTime;
     DATA_PROPONOWANA := 0;
     rozpoczety := False;
     poprzedniEtap := nil;
@@ -54,7 +61,7 @@ implementation
     daneZlecenia := nil;
   end;
 
-  procedure TZlecenieEtap.ZapiszSie(query1 : TADOQuery; id_stanowiska : Integer);
+  procedure TZlecenieEtap.ZapiszSie(query1 : TADOQuery);
   begin
     query1.SQL.Text := 'SELECT data_rozpoczecia, data_zakonczenia, id_stanowiska_przydzielenie '+
                        'FROM zlec_technologie_etapy '+
@@ -62,17 +69,17 @@ implementation
                        'AND nr_etapu = ' + IntToStr(NR_ETAPU);
     query1.Open;
     query1.Edit;
-    query1.Fields[0].AsDateTime := DATA_START;
-    query1.Fields[1].AsDateTime := DATA_KONIEC;
-    query1.Fields[2].AsInteger := id_stanowiska;
+    query1.Fields[0].AsDateTime := DATA_ROZPOCZECIA;
+    query1.Fields[1].AsDateTime := DATA_ZAKONCZENIA;
+    query1.Fields[2].AsInteger := ID_STANOWISKA_PRZYDZIELENIE;
     query1.Post;
     query1.Close
   end;
 
   procedure TZlecenieEtap.Czysc;
   begin
-    DATA_START := 0;
-    DATA_KONIEC := 0;
+    DATA_ROZPOCZECIA := 0;
+    DATA_ZAKONCZENIA := 0;
     DATA_PROPONOWANA := 0;
   end;
 
@@ -105,7 +112,7 @@ implementation
     end
     else if not (poprzedniEtap = nil) then
     begin
-      Result := poprzedniEtap.DATA_KONIEC;
+      Result := poprzedniEtap.DATA_ZAKONCZENIA;
     end
     else
     begin

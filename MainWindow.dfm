@@ -50,6 +50,15 @@ object Form1: TForm1
       TabOrder = 2
       Text = 'ComboBox1'
     end
+    object SaveToDBButton: TButton
+      Left = 792
+      Top = 16
+      Width = 75
+      Height = 25
+      Caption = 'Zapisz'
+      TabOrder = 3
+      OnClick = SaveToDBButtonClick
+    end
   end
   object Memo1: TMemo
     AlignWithMargins = True
@@ -64,7 +73,6 @@ object Form1: TForm1
     ParentBiDiMode = False
     ScrollBars = ssVertical
     TabOrder = 1
-    ExplicitTop = 644
   end
   object Chart1: TChart
     AlignWithMargins = True
@@ -127,7 +135,6 @@ object Form1: TForm1
     TabOrder = 2
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseUp = Chart1MouseUp
-    ExplicitHeight = 194
     PrintMargins = (
       15
       33
@@ -142,8 +149,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 11842740
-      Pointer.Gradient.EndColor = 11842740
+      Pointer.Brush.Gradient.EndColor = 10708548
+      Pointer.Gradient.EndColor = 10708548
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15
@@ -174,7 +181,6 @@ object Form1: TForm1
     Align = alTop
     TabOrder = 3
     OnChange = TabControl1Change
-    ExplicitTop = 520
     object Panel1: TPanel
       Left = 4
       Top = 23
@@ -184,7 +190,6 @@ object Form1: TForm1
       Caption = 'Kolor zlecenia'
       ParentBackground = False
       TabOrder = 0
-      ExplicitTop = 176
     end
     object DBGrid1: TDBGrid
       Left = 4
@@ -206,12 +211,11 @@ object Form1: TForm1
       Width = 890
       Height = 117
       Align = alBottom
+      ColCount = 6
       RowCount = 1
       FixedRows = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
       TabOrder = 2
-      ExplicitLeft = 19
-      ExplicitTop = 46
     end
   end
   object ADOConnection1: TADOConnection

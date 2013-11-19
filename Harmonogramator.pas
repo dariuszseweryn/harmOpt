@@ -111,8 +111,8 @@ implementation
           operacjeDoHarmonogramowania.Remove(operacja);
 //          wszystkieOperacje.Remove(operacja);
           najwczesniejszeOperacje.Remove(operacja);
-          operacja.DATA_START := najwczesniejszyCzasProponowany;
-          operacja.DATA_KONIEC := CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(najwczesniejszyCzasProponowany, operacja.CzasWykonaniaNetto);
+          operacja.DATA_ROZPOCZECIA := najwczesniejszyCzasProponowany;
+          operacja.DATA_ZAKONCZENIA := CzasHelper.DataCzasZakonczeniaDlaDatyCzasuStartuICzasuTrwania(najwczesniejszyCzasProponowany, operacja.CzasWykonaniaNetto);
           potencjalneMaszyny.Free(); // D
           niezajeteMaszyny.Free(); // D
           stan := 8;
@@ -144,7 +144,7 @@ implementation
               StanowiskaNieZnajdujaceSieW(potencjalneMaszyny);
             for mozeNiezajetaMaszyna in mozeNiezajeteMaszyny do
             begin
-              if mozeNiezajetaMaszyna.WolneOCzasie(operacjaTemp.DATA_START) then
+              if mozeNiezajetaMaszyna.WolneOCzasie(operacjaTemp.DATA_ROZPOCZECIA) then
               begin
                 moznaWydziedziczycOperacje := True;
                 break;
