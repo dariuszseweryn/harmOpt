@@ -59,6 +59,15 @@ object Form1: TForm1
       TabOrder = 3
       OnClick = SaveToDBButtonClick
     end
+    object LoadFromDBButton: TButton
+      Left = 664
+      Top = 16
+      Width = 75
+      Height = 25
+      Caption = 'Wczytaj'
+      TabOrder = 4
+      OnClick = LoadFromDBButtonClick
+    end
   end
   object Memo1: TMemo
     AlignWithMargins = True
@@ -149,8 +158,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 10708548
-      Pointer.Gradient.EndColor = 10708548
+      Pointer.Brush.Gradient.EndColor = 6519581
+      Pointer.Gradient.EndColor = 6519581
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15

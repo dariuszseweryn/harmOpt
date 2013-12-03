@@ -30,6 +30,7 @@ type
     ADOQuery1: TADOQuery;
     StringGrid1: TStringGrid;
     SaveToDBButton: TButton;
+    LoadFromDBButton: TButton;
     procedure Button2Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
     procedure Chart1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -45,6 +46,7 @@ type
     procedure NaniesEtapyZeStanowiskNaWykres;
     procedure ZbudujKoloryITaby;
     procedure SaveToDBButtonClick(Sender: TObject);
+    procedure LoadFromDBButtonClick(Sender: TObject);
   private
 
     zlecenia : TZlecenia;
@@ -198,6 +200,19 @@ begin
   Memo1.Text := Memo1.Text + printString + #13#10;
 end;
 
+procedure TForm1.LoadFromDBButtonClick(Sender: TObject);
+begin
+  zlecenia.Free;
+  zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
+  stanowiska.Czysc;
+
+  ZbudujKoloryITaby;
+
+  PrzydzielEtapyDoStanowisk;
+  NaniesEtapyZeStanowiskNaWykres;
+  self.TabControl1Change(TabControl1);
+end;
+
 procedure TForm1.Button2Click(Sender: TObject);
 begin
   harmonogramuj;
@@ -314,6 +329,7 @@ var
   stanowisko : TStanowisko;
   etapZlecenia : TZlecenieEtap;
 begin
+  Series1.Clear;
   for stanowisko in stanowiska do
   begin
     for etapZlecenia in stanowisko.listaEtapow do
@@ -338,6 +354,7 @@ procedure TForm1.ZbudujKoloryITaby;
 var
   zlecenie : TZlecenie;
 begin
+  TabControl1.Tabs.Clear;
   for zlecenie in zlecenia do
   begin
     KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
