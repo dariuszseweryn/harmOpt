@@ -14,41 +14,50 @@ uses
 
 type
   TForm1 = class(TForm)
-    GroupBox1: TGroupBox;
+    UstawieniaHarmonogramu: TGroupBox;
     ADOConnection1: TADOConnection;
     Button2: TButton;
     Memo1: TMemo;
-    Chart1: TChart;
+    WykresGantta: TChart;
     ChartTool1: TGanttTool;
-    Series1: TGanttSeries;
+    SeriaDanychGantta: TGanttSeries;
     CheckBox1: TCheckBox;
     ComboBox1: TComboBox;
-    TabControl1: TTabControl;
-    Panel1: TPanel;
-    StringGrid1: TStringGrid;
+    TabZlecen: TTabControl;
+    PanelKoloruZlecenia: TPanel;
+    TabelaHarmonogramu: TStringGrid;
     SaveToDBButton: TButton;
     LoadFromDBButton: TButton;
-    ListBox1: TListBox;
+    ListaStanowiskDoWyboru: TListBox;
+    DatePicker: TDateTimePicker;
+    PanelWyboruDatyCzasu: TPanel;
+    TimePicker: TDateTimePicker;
+    PrzyciskZatwierdzDateCzas: TButton;
     procedure Button2Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
-    procedure Chart1MouseUp(Sender: TObject; Button: TMouseButton;
+    procedure WykresGanttaMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure Series1Click(Sender: TChartSeries; ValueIndex: Integer;
+    procedure SeriaDanychGanttaClick(Sender: TChartSeries; ValueIndex: Integer;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure CheckBox1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure TabControl1Change(Sender: TObject);
+    procedure TabZlecenChange(Sender: TObject);
     procedure AutoSizeCol(Grid: TStringGrid; Column: integer);
     procedure PrzydzielEtapyDoStanowisk;
     procedure NaniesEtapyZeStanowiskNaWykres;
     procedure ZbudujKoloryITaby;
     function ZaznaczonyEtapWTabeli : TZlecenieEtap;
+    procedure WyswietlPanelWyboruStanowisk;
+    procedure WyswietlPanelWyboruDatyCzasu(tag : Integer);
+    procedure WyswietlKomponentPoKliknieciuNaTabele(komponent : TControl);
     procedure SaveToDBButtonClick(Sender: TObject);
     procedure LoadFromDBButtonClick(Sender: TObject);
     procedure StringGrid1OnDblClick(Sender: TObject);
-    procedure ListBox1Exit(Sender: TObject);
-    procedure ListBox1DblClick(Sender: TObject);
+    procedure ListaStanowiskDoWyboruExit(Sender: TObject);
+    procedure ListaStanowiskDoWyboruDblClick(Sender: TObject);
+    procedure PanelWyborDatyCzasuExit(Sender: TObject);
+    procedure PrzyciskZatwierdzDateCzasClick(Sender: TObject);
   private
 
     zlecenia : TZlecenia;
@@ -71,6 +80,8 @@ var
   Harmonogramator : THarmonogramator;
   LastDraggedBarNumber : Integer = -1;
   drhArray : array[1..9] of TDyspozytorskaRegulaHarmonogramowania;
+  TAG_WYBOR_POCZATKU : Integer = 0;
+  TAG_WYBOR_KONCA : Integer = 1;
 
 implementation
 
@@ -87,7 +98,7 @@ begin
   begin
     drh := ComboBox1.Items.Objects[ComboBox1.ItemIndex] as TDyspozytorskaRegulaHarmonogramowania;
 
-    Series1.Clear;
+    SeriaDanychGantta.Clear;
 
     zlecenia.Czysc;
     stanowiska.Czysc;
@@ -97,7 +108,7 @@ begin
   end;
 
   NaniesEtapyZeStanowiskNaWykres;
-  self.TabControl1Change(TabControl1);
+  TabZlecenChange(TabZlecen);
 end;
 
 procedure TForm1.SaveToDBButtonClick(Sender: TObject);
@@ -112,31 +123,50 @@ end;
 
 procedure TForm1.StringGrid1OnDblClick(Sender: TObject);
 var
+  nazwaKolumny : string;
+begin
+  if not (TabelaHarmonogramu.Row = 0) then
+  begin
+    nazwaKolumny := TabelaHarmonogramu.Cols[TabelaHarmonogramu.Col].Strings[0];
+    if (nazwaKolumny = 'id_stanowiska_przydzielenie') then
+      WyswietlPanelWyboruStanowisk
+    else if (nazwaKolumny = 'data_rozpoczecia') then
+      WyswietlPanelWyboruDatyCzasu(TAG_WYBOR_POCZATKU)
+    else if (nazwaKolumny = 'data_zakonczenia') then
+      WyswietlPanelWyboruDatyCzasu(TAG_WYBOR_KONCA);
+  end;
+end;
+
+procedure TForm1.WyswietlPanelWyboruStanowisk;
+var
   etapZlecenia : TZlecenieEtap;
   stanowiskaPasujace : TStanowiska;
   stanowisko : TStanowisko;
-  rect : TRect;
 begin
-  if (StringGrid1.Cols[StringGrid1.Col].Strings[0] = 'id_stanowiska_przydzielenie')
-    and not (StringGrid1.Row = 0) then
-  begin
-    ListBox1.Items.Clear;
+  ListaStanowiskDoWyboru.Items.Clear;
     etapZlecenia := ZaznaczonyEtapWTabeli;
     stanowiskaPasujace := stanowiska.StanowiskaPasujaceDlaEtapuZlecenia(etapZlecenia);
     for stanowisko in stanowiskaPasujace do
     begin
-      ListBox1.Items.Add(stanowisko.NAZ_STANOWISKA);
+      ListaStanowiskDoWyboru.Items.Add(stanowisko.NAZ_STANOWISKA);
     end;
-    rect := StringGrid1.CellRect(StringGrid1.Col, StringGrid1.Row);
-    ListBox1.Left := rect.Left + StringGrid1.Left;
-    ListBox1.Top := rect.Bottom + StringGrid1.Top;
-    ListBox1.Width := rect.Right - rect.Left;
-    if (StringGrid1.Top + StringGrid1.Height < ListBox1.Top + ListBox1.Height) then
-      ListBox1.Top := (StringGrid1.Top + StringGrid1.Height) - ListBox1.Height;
+    WyswietlKomponentPoKliknieciuNaTabele(ListaStanowiskDoWyboru);
+    ListaStanowiskDoWyboru.SetFocus;
+end;
 
-    ListBox1.Visible := True;
-    ListBox1.SetFocus;
-  end;
+procedure TForm1.WyswietlKomponentPoKliknieciuNaTabele(komponent : TControl);
+var
+  rect : TRect;
+begin
+  rect := TabelaHarmonogramu.CellRect(TabelaHarmonogramu.Col, TabelaHarmonogramu.Row);
+  komponent.Left := rect.Left + TabelaHarmonogramu.Left;
+  komponent.Top := rect.Bottom + TabelaHarmonogramu.Top;
+  if komponent.Width < rect.Right - rect.Left then
+    komponent.Width := rect.Right - rect.Left;
+  if (TabelaHarmonogramu.Top + TabelaHarmonogramu.Height < komponent.Top + komponent.Height) then
+    komponent.Top := (TabelaHarmonogramu.Top + TabelaHarmonogramu.Height) - komponent.Height;
+
+  komponent.Visible := True;
 end;
 
 function TForm1.ZaznaczonyEtapWTabeli : TZlecenieEtap;
@@ -144,12 +174,29 @@ var
   zlecenie : TZlecenie;
 begin
   Result := nil;
-  zlecenie := zlecenia.Items[TabControl1.TabIndex];
-  if StringGrid1.Row - 1 < zlecenie.Count then
-    Result := zlecenie.Items[StringGrid1.Row - 1];
+  zlecenie := zlecenia.Items[TabZlecen.TabIndex];
+  if TabelaHarmonogramu.Row - 1 < zlecenie.Count then
+    Result := zlecenie.Items[TabelaHarmonogramu.Row - 1];
 end;
 
-procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
+procedure TForm1.WyswietlPanelWyboruDatyCzasu(tag: Integer);
+var
+  etapZlecenia : TZlecenieEtap;
+  dataDoUstawienia : TDateTime;
+begin
+  etapZlecenia := ZaznaczonyEtapWTabeli;
+  if tag = TAG_WYBOR_POCZATKU then dataDoUstawienia := etapZlecenia.DATA_ROZPOCZECIA
+  else dataDoUstawienia := etapZlecenia.DATA_ZAKONCZENIA;
+
+  DatePicker.DateTime := DateOf(dataDoUstawienia);
+  TimePicker.DateTime := TimeOf(dataDoUstawienia);
+  PanelWyboruDatyCzasu.Tag := tag;
+
+  WyswietlKomponentPoKliknieciuNaTabele(PanelWyboruDatyCzasu);
+  DatePicker.SetFocus;
+end;
+
+procedure TForm1.SeriaDanychGanttaClick(Sender: TChartSeries; ValueIndex: Integer;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   kliknietyEtapZlecenia, pierwszyEtap, ostatniEtap : TZlecenieEtap;
@@ -179,16 +226,18 @@ begin
   end;
 end;
 
-procedure TForm1.TabControl1Change(Sender: TObject);
+procedure TForm1.TabZlecenChange(Sender: TObject);
 var
   zlecenie : TZlecenie;
   sl : TStringList;
   etap : TZlecenieEtap;
   i : Integer;
 begin
-  zlecenie := zlecenia.Items[TabControl1.TabIndex];
-  Panel1.Color := KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
-  StringGrid1.RowCount := 1;
+  PanelWyboruDatyCzasu.Visible := False;
+  ListaStanowiskDoWyboru.Visible := False;
+  zlecenie := zlecenia.Items[TabZlecen.TabIndex];
+  PanelKoloruZlecenia.Color := KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
+  TabelaHarmonogramu.RowCount := 1;
   sl := TStringList.Create;
   for etap in zlecenie do
   begin
@@ -213,14 +262,14 @@ begin
     else
       sl.Add(' ');
 
-    i := StringGrid1.RowCount;
-    StringGrid1.RowCount := i + 1;
-    StringGrid1.Rows[i].Clear;
-    StringGrid1.Rows[i].AddStrings(sl);
+    i := TabelaHarmonogramu.RowCount;
+    TabelaHarmonogramu.RowCount := i + 1;
+    TabelaHarmonogramu.Rows[i].Clear;
+    TabelaHarmonogramu.Rows[i].AddStrings(sl);
   end;
   sl.Free;
-  for i := 0 to StringGrid1.ColCount - 1 do
-    AutoSizeCol(StringGrid1, i);
+  for i := 0 to TabelaHarmonogramu.ColCount - 1 do
+    AutoSizeCol(TabelaHarmonogramu, i);
 end;
 
 procedure TForm1.print(printString : String);
@@ -228,7 +277,7 @@ begin
   Memo1.Text := Memo1.Text + printString + #13#10;
 end;
 
-procedure TForm1.ListBox1DblClick(Sender: TObject);
+procedure TForm1.ListaStanowiskDoWyboruDblClick(Sender: TObject);
 var
   etapZlecenia : TZlecenieEtap;
   poprzednieStanowisko : TStanowisko;
@@ -238,21 +287,26 @@ begin
   poprzednieStanowisko := stanowiska.StanowiskoZId(etapZlecenia.ID_STANOWISKA_PRZYDZIELENIE);
   nastepneStanowisko := stanowiska
     .StanowiskaPasujaceDlaEtapuZlecenia(etapZlecenia)
-    .Items[ListBox1.ItemIndex];
+    .Items[ListaStanowiskDoWyboru.ItemIndex];
   if not (poprzednieStanowisko = nastepneStanowisko) then
   begin
     poprzednieStanowisko.UsunEtap(etapZlecenia);
     nastepneStanowisko.DodajEtap(etapZlecenia);
     etapZlecenia.ID_STANOWISKA_PRZYDZIELENIE := nastepneStanowisko.ID_STANOWISKA;
     NaniesEtapyZeStanowiskNaWykres;
-    TabControl1Change(TabControl1);
+    TabZlecenChange(TabZlecen);
   end;
-  ListBox1.Visible := false;
+  ListaStanowiskDoWyboru.Visible := false;
 end;
 
-procedure TForm1.ListBox1Exit(Sender: TObject);
+procedure TForm1.ListaStanowiskDoWyboruExit(Sender: TObject);
 begin
-  ListBox1.Visible := False;
+  ListaStanowiskDoWyboru.Visible := False;
+end;
+
+procedure TForm1.PanelWyborDatyCzasuExit(Sender: TObject);
+begin
+  PanelWyboruDatyCzasu.Visible := False;
 end;
 
 procedure TForm1.LoadFromDBButtonClick(Sender: TObject);
@@ -263,7 +317,7 @@ begin
 
   PrzydzielEtapyDoStanowisk;
   NaniesEtapyZeStanowiskNaWykres;
-  self.TabControl1Change(TabControl1);
+  self.TabZlecenChange(TabZlecen);
 end;
 
 procedure TForm1.Button2Click(Sender: TObject);
@@ -271,7 +325,7 @@ begin
   harmonogramuj;
 end;
 
-procedure TForm1.Chart1MouseUp(Sender: TObject; Button: TMouseButton;
+procedure TForm1.WykresGanttaMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if LastDraggedBarNumber >= 0 then
@@ -289,7 +343,7 @@ end;
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
   ChartTool1.AllowDrag := CheckBox1.Checked;
-  Chart1.Zoom.Allow := not(CheckBox1.Checked);
+  WykresGantta.Zoom.Allow := not(CheckBox1.Checked);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -316,12 +370,12 @@ begin
   end;
   ComboBox1.ItemIndex := 0;
 
-  StringGrid1.Cols[0].Add('nr_etapu');
-  StringGrid1.Cols[1].Add('id_rodzaje_stanowisk');
-  StringGrid1.Cols[2].Add('id_stanowiska');
-  StringGrid1.Cols[3].Add('data_rozpoczecia');
-  StringGrid1.Cols[4].Add('data_zakonczenia');
-  StringGrid1.Cols[5].Add('id_stanowiska_przydzielenie');
+  TabelaHarmonogramu.Cols[0].Add('nr_etapu');
+  TabelaHarmonogramu.Cols[1].Add('id_rodzaje_stanowisk');
+  TabelaHarmonogramu.Cols[2].Add('id_stanowiska');
+  TabelaHarmonogramu.Cols[3].Add('data_rozpoczecia');
+  TabelaHarmonogramu.Cols[4].Add('data_zakonczenia');
+  TabelaHarmonogramu.Cols[5].Add('id_stanowiska_przydzielenie');
 
   zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
   stanowiska := DBH.WyciagnijStanowiskaDoHarmonogramowania;
@@ -330,7 +384,7 @@ begin
 
   PrzydzielEtapyDoStanowisk;
   NaniesEtapyZeStanowiskNaWykres;
-  self.TabControl1Change(TabControl1);
+  TabZlecenChange(TabZlecen);
   // TODO: add machine
 end;
 
@@ -362,6 +416,24 @@ begin
   Grid.ColWidths[Column] := WMax + 10;
 end;
 
+procedure TForm1.PrzyciskZatwierdzDateCzasClick(Sender: TObject);
+var
+  etapZlecenia : TZlecenieEtap;
+  dataCzasDoZapisania : TDateTime;
+begin
+  etapZlecenia := ZaznaczonyEtapWTabeli;
+  dataCzasDoZapisania := DatePicker.DateTime + TimePicker.DateTime;
+  if PanelWyboruDatyCzasu.Tag = TAG_WYBOR_POCZATKU then
+    etapZlecenia.DATA_ROZPOCZECIA := dataCzasDoZapisania
+  else if PanelWyboruDatyCzasu.Tag = TAG_WYBOR_KONCA then
+    etapZlecenia.DATA_ZAKONCZENIA := dataCzasDoZapisania;
+  PanelWyboruDatyCzasu.Visible := False;
+
+  PrzydzielEtapyDoStanowisk;
+  NaniesEtapyZeStanowiskNaWykres;
+  TabZlecenChange(TabZlecen);
+end;
+
 procedure TForm1.PrzydzielEtapyDoStanowisk;
 var
   etap : TZlecenieEtap;
@@ -382,7 +454,7 @@ var
   stanowisko : TStanowisko;
   etapZlecenia : TZlecenieEtap;
 begin
-  Series1.Clear;
+  SeriaDanychGantta.Clear;
   for stanowisko in stanowiska do
   begin
     for etapZlecenia in stanowisko.listaEtapow do
@@ -392,7 +464,7 @@ begin
         not (etapZlecenia.DATA_ZAKONCZENIA = 0) and
         not (etapZlecenia.ID_STANOWISKA_PRZYDZIELENIE = 0)) then
         begin
-          etapZlecenia.ganttID := Series1.AddGanttColor(etapZlecenia.DATA_ROZPOCZECIA,
+          etapZlecenia.ganttID := SeriaDanychGantta.AddGanttColor(etapZlecenia.DATA_ROZPOCZECIA,
                                                     etapZlecenia.DATA_ZAKONCZENIA,
                                                     stanowiska.IndexOf(stanowisko),
                                                     stanowisko.NAZ_STANOWISKA,
@@ -400,19 +472,23 @@ begin
         end;
     end;
   end;
-  zlecenia.PolaczKolejneEtapyZlecenWSerii(Series1);
+  zlecenia.PolaczKolejneEtapyZlecenWSerii(SeriaDanychGantta);
 end;
 
 procedure TForm1.ZbudujKoloryITaby;
 var
   zlecenie : TZlecenie;
+  i, id_zlecenia : Integer;
 begin
-  TabControl1.Tabs.Clear;
+  i := TabZlecen.TabIndex;
+  TabZlecen.Tabs.Clear;
   for zlecenie in zlecenia do
   begin
     KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
-    TabControl1.Tabs.Add(IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA));
+    TabZlecen.Tabs.Add(IntToStr(zlecenie.daneZlecenia.ID_ZLECENIA));
   end;
+//  if not (i = -1) and (i < TabZlecen.Tabs.Count) then
+
 end;
 
 end.

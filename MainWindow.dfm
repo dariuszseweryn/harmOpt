@@ -15,7 +15,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object GroupBox1: TGroupBox
+  object UstawieniaHarmonogramu: TGroupBox
     AlignWithMargins = True
     Left = 3
     Top = 3
@@ -83,7 +83,7 @@ object Form1: TForm1
     ScrollBars = ssVertical
     TabOrder = 1
   end
-  object Chart1: TChart
+  object WykresGantta: TChart
     AlignWithMargins = True
     Left = 3
     Top = 63
@@ -143,20 +143,20 @@ object Form1: TForm1
     Align = alTop
     TabOrder = 2
     Anchors = [akLeft, akTop, akRight, akBottom]
-    OnMouseUp = Chart1MouseUp
+    OnMouseUp = WykresGanttaMouseUp
     PrintMargins = (
       15
       33
       15
       33)
     ColorPaletteIndex = 13
-    object Series1: TGanttSeries
+    object SeriaDanychGantta: TGanttSeries
       Marks.Arrow.Visible = True
       Marks.Callout.Brush.Color = clBlack
       Marks.Callout.Arrow.Visible = True
       Marks.ShapeStyle = fosRoundRectangle
       Marks.Visible = False
-      OnClick = Series1Click
+      OnClick = SeriaDanychGanttaClick
       ClickableLine = False
       Pointer.Brush.Gradient.EndColor = 11048782
       Pointer.Gradient.EndColor = 11048782
@@ -178,19 +178,19 @@ object Form1: TForm1
     object ChartTool1: TGanttTool
       AllowDrag = False
       AllowResize = False
-      Series = Series1
+      Series = SeriaDanychGantta
       OnDragBar = ChartTool1DragBar
     end
   end
-  object TabControl1: TTabControl
+  object TabZlecen: TTabControl
     Left = 0
     Top = 508
     Width = 898
     Height = 325
     Align = alTop
     TabOrder = 3
-    OnChange = TabControl1Change
-    object Panel1: TPanel
+    OnChange = TabZlecenChange
+    object PanelKoloruZlecenia: TPanel
       Left = 4
       Top = 27
       Width = 890
@@ -200,7 +200,7 @@ object Form1: TForm1
       ParentBackground = False
       TabOrder = 0
     end
-    object StringGrid1: TStringGrid
+    object TabelaHarmonogramu: TStringGrid
       Left = 4
       Top = 56
       Width = 890
@@ -213,7 +213,7 @@ object Form1: TForm1
       TabOrder = 1
       OnDblClick = StringGrid1OnDblClick
     end
-    object ListBox1: TListBox
+    object ListaStanowiskDoWyboru: TListBox
       Left = 48
       Top = 120
       Width = 121
@@ -221,8 +221,45 @@ object Form1: TForm1
       ItemHeight = 13
       TabOrder = 2
       Visible = False
-      OnDblClick = ListBox1DblClick
-      OnExit = ListBox1Exit
+      OnDblClick = ListaStanowiskDoWyboruDblClick
+      OnExit = ListaStanowiskDoWyboruExit
+    end
+    object PanelWyboruDatyCzasu: TPanel
+      Left = 211
+      Top = 120
+      Width = 230
+      Height = 97
+      TabOrder = 3
+      Visible = False
+      OnExit = PanelWyborDatyCzasuExit
+      object DatePicker: TDateTimePicker
+        Left = 23
+        Top = 12
+        Width = 186
+        Height = 21
+        Date = 41613.628316319450000000
+        Time = 41613.628316319450000000
+        TabOrder = 0
+      end
+      object TimePicker: TDateTimePicker
+        Left = 23
+        Top = 39
+        Width = 186
+        Height = 21
+        Date = 41613.628316319450000000
+        Time = 41613.628316319450000000
+        Kind = dtkTime
+        TabOrder = 1
+      end
+      object PrzyciskZatwierdzDateCzas: TButton
+        Left = 75
+        Top = 66
+        Width = 75
+        Height = 25
+        Caption = 'OK'
+        TabOrder = 2
+        OnClick = PrzyciskZatwierdzDateCzasClick
+      end
     end
   end
   object ADOConnection1: TADOConnection
