@@ -60,7 +60,7 @@ implementation
     etapZlecenia : TZlecenieEtap;
   begin
     for etapZlecenia in self do
-      if not (etapZlecenia.poprzedniEtap = nil) then
+      if not (etapZlecenia.poprzedniEtap = nil) and not (etapZlecenia.ganttID = 0) then
           seria.NextTask[etapZlecenia.poprzedniEtap.ganttID] := etapZlecenia.ganttID;
   end;
 
