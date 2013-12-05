@@ -25,12 +25,10 @@ type
     ComboBox1: TComboBox;
     TabControl1: TTabControl;
     Panel1: TPanel;
-    DBGrid1: TDBGrid;
-    DataSource1: TDataSource;
-    ADOQuery1: TADOQuery;
     StringGrid1: TStringGrid;
     SaveToDBButton: TButton;
     LoadFromDBButton: TButton;
+    ListBox1: TListBox;
     procedure Button2Click(Sender: TObject);
     procedure ChartTool1DragBar(Sender: TGanttTool; GanttBar: Integer);
     procedure Chart1MouseUp(Sender: TObject; Button: TMouseButton;
@@ -45,8 +43,12 @@ type
     procedure PrzydzielEtapyDoStanowisk;
     procedure NaniesEtapyZeStanowiskNaWykres;
     procedure ZbudujKoloryITaby;
+    function ZaznaczonyEtapWTabeli : TZlecenieEtap;
     procedure SaveToDBButtonClick(Sender: TObject);
     procedure LoadFromDBButtonClick(Sender: TObject);
+    procedure StringGrid1OnDblClick(Sender: TObject);
+    procedure ListBox1Exit(Sender: TObject);
+    procedure ListBox1DblClick(Sender: TObject);
   private
 
     zlecenia : TZlecenia;
@@ -108,6 +110,45 @@ begin
       DBH.ZapiszEtap(etap);
 end;
 
+procedure TForm1.StringGrid1OnDblClick(Sender: TObject);
+var
+  etapZlecenia : TZlecenieEtap;
+  stanowiskaPasujace : TStanowiska;
+  stanowisko : TStanowisko;
+  rect : TRect;
+begin
+  if (StringGrid1.Cols[StringGrid1.Col].Strings[0] = 'id_stanowiska_przydzielenie')
+    and not (StringGrid1.Row = 0) then
+  begin
+    ListBox1.Items.Clear;
+    etapZlecenia := ZaznaczonyEtapWTabeli;
+    stanowiskaPasujace := stanowiska.StanowiskaPasujaceDlaEtapuZlecenia(etapZlecenia);
+    for stanowisko in stanowiskaPasujace do
+    begin
+      ListBox1.Items.Add(stanowisko.NAZ_STANOWISKA);
+    end;
+    rect := StringGrid1.CellRect(StringGrid1.Col, StringGrid1.Row);
+    ListBox1.Left := rect.Left + StringGrid1.Left;
+    ListBox1.Top := rect.Bottom + StringGrid1.Top;
+    ListBox1.Width := rect.Right - rect.Left;
+    if (StringGrid1.Top + StringGrid1.Height < ListBox1.Top + ListBox1.Height) then
+      ListBox1.Top := (StringGrid1.Top + StringGrid1.Height) - ListBox1.Height;
+
+    ListBox1.Visible := True;
+    ListBox1.SetFocus;
+  end;
+end;
+
+function TForm1.ZaznaczonyEtapWTabeli : TZlecenieEtap;
+var
+  zlecenie : TZlecenie;
+begin
+  Result := nil;
+  zlecenie := zlecenia.Items[TabControl1.TabIndex];
+  if StringGrid1.Row - 1 < zlecenie.Count then
+    Result := zlecenie.Items[StringGrid1.Row - 1];
+end;
+
 procedure TForm1.Series1Click(Sender: TChartSeries; ValueIndex: Integer;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
@@ -147,19 +188,6 @@ var
 begin
   zlecenie := zlecenia.Items[TabControl1.TabIndex];
   Panel1.Color := KH.KolorDlaId(zlecenie.daneZlecenia.ID_ZLECENIA);
-  ADOQuery1.Close;
-  ADOQuery1.SQL.Clear;
-  ADOQuery1.SQL.Add('SELECT nr_etapu, id_rodzaje_stanowisk, id_stanowiska, data_rozpoczecia, data_zakonczenia, id_stanowiska_przydzielenie '+
-                    'FROM zlec_technologie_etapy '+
-                    'WHERE id_zlec_technologie = '+ IntToStr(zlecenie.daneZlecenia.ID_ZLEC_TECHNOLOGIE) + ' ' +
-                    'ORDER BY nr_etapu asc');
-  ADOQuery1.Open;
-  DBGrid1.Columns.Items[0].ReadOnly := true;
-  DBGrid1.Columns.Items[1].ReadOnly := true;
-  DBGrid1.Columns.Items[2].ReadOnly := true;
-  // Hack for having scrollbars visible
-  DBGrid1.Width := DBGrid1.Width - 1;
-  DBGrid1.Width := DBGrid1.Width + 1;
   StringGrid1.RowCount := 1;
   sl := TStringList.Create;
   for etap in zlecenie do
@@ -181,7 +209,7 @@ begin
     else
       sl.Add(' ');
     if not (etap.ID_STANOWISKA_PRZYDZIELENIE = 0) then
-      sl.Add(IntToStr(etap.ID_STANOWISKA_PRZYDZIELENIE))
+      sl.Add(stanowiska.StanowiskoZId(etap.ID_STANOWISKA_PRZYDZIELENIE).NAZ_STANOWISKA)
     else
       sl.Add(' ');
 
@@ -200,13 +228,38 @@ begin
   Memo1.Text := Memo1.Text + printString + #13#10;
 end;
 
+procedure TForm1.ListBox1DblClick(Sender: TObject);
+var
+  etapZlecenia : TZlecenieEtap;
+  poprzednieStanowisko : TStanowisko;
+  nastepneStanowisko : TStanowisko;
+begin
+  etapZlecenia := ZaznaczonyEtapWTabeli;
+  poprzednieStanowisko := stanowiska.StanowiskoZId(etapZlecenia.ID_STANOWISKA_PRZYDZIELENIE);
+  nastepneStanowisko := stanowiska
+    .StanowiskaPasujaceDlaEtapuZlecenia(etapZlecenia)
+    .Items[ListBox1.ItemIndex];
+  if not (poprzednieStanowisko = nastepneStanowisko) then
+  begin
+    poprzednieStanowisko.UsunEtap(etapZlecenia);
+    nastepneStanowisko.DodajEtap(etapZlecenia);
+    etapZlecenia.ID_STANOWISKA_PRZYDZIELENIE := nastepneStanowisko.ID_STANOWISKA;
+    NaniesEtapyZeStanowiskNaWykres;
+    TabControl1Change(TabControl1);
+  end;
+  ListBox1.Visible := false;
+end;
+
+procedure TForm1.ListBox1Exit(Sender: TObject);
+begin
+  ListBox1.Visible := False;
+end;
+
 procedure TForm1.LoadFromDBButtonClick(Sender: TObject);
 begin
   zlecenia.Free;
   zlecenia := DBH.WyciagnijZleceniaDoHarmonogramowania;
   stanowiska.Czysc;
-
-  ZbudujKoloryITaby;
 
   PrzydzielEtapyDoStanowisk;
   NaniesEtapyZeStanowiskNaWykres;
@@ -264,8 +317,8 @@ begin
   ComboBox1.ItemIndex := 0;
 
   StringGrid1.Cols[0].Add('nr_etapu');
-  StringGrid1.Cols[1].Add('id_stanowiska');
-  StringGrid1.Cols[2].Add('id_rodzaje_stanowisk');
+  StringGrid1.Cols[1].Add('id_rodzaje_stanowisk');
+  StringGrid1.Cols[2].Add('id_stanowiska');
   StringGrid1.Cols[3].Add('data_rozpoczecia');
   StringGrid1.Cols[4].Add('data_zakonczenia');
   StringGrid1.Cols[5].Add('id_stanowiska_przydzielenie');

@@ -158,8 +158,8 @@ object Form1: TForm1
       Marks.Visible = False
       OnClick = Series1Click
       ClickableLine = False
-      Pointer.Brush.Gradient.EndColor = 6519581
-      Pointer.Gradient.EndColor = 6519581
+      Pointer.Brush.Gradient.EndColor = 11048782
+      Pointer.Gradient.EndColor = 11048782
       Pointer.InflateMargins = True
       Pointer.Style = psRectangle
       Pointer.VertSize = 15
@@ -192,7 +192,7 @@ object Form1: TForm1
     OnChange = TabControl1Change
     object Panel1: TPanel
       Left = 4
-      Top = 23
+      Top = 27
       Width = 890
       Height = 29
       Align = alBottom
@@ -200,31 +200,29 @@ object Form1: TForm1
       ParentBackground = False
       TabOrder = 0
     end
-    object DBGrid1: TDBGrid
-      Left = 4
-      Top = 169
-      Width = 890
-      Height = 152
-      Align = alBottom
-      DataSource = DataSource1
-      TabOrder = 1
-      TitleFont.Charset = DEFAULT_CHARSET
-      TitleFont.Color = clWindowText
-      TitleFont.Height = -11
-      TitleFont.Name = 'Tahoma'
-      TitleFont.Style = []
-    end
     object StringGrid1: TStringGrid
       Left = 4
-      Top = 52
+      Top = 56
       Width = 890
-      Height = 117
+      Height = 265
       Align = alBottom
       ColCount = 6
       RowCount = 1
       FixedRows = 0
       Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goColSizing]
+      TabOrder = 1
+      OnDblClick = StringGrid1OnDblClick
+    end
+    object ListBox1: TListBox
+      Left = 48
+      Top = 120
+      Width = 121
+      Height = 97
+      ItemHeight = 13
       TabOrder = 2
+      Visible = False
+      OnDblClick = ListBox1DblClick
+      OnExit = ListBox1Exit
     end
   end
   object ADOConnection1: TADOConnection
@@ -238,20 +236,5 @@ object Form1: TForm1
     Provider = 'SQLOLEDB.1'
     Left = 672
     Top = 24
-  end
-  object DataSource1: TDataSource
-    DataSet = ADOQuery1
-    Left = 784
-    Top = 456
-  end
-  object ADOQuery1: TADOQuery
-    Active = True
-    Connection = ADOConnection1
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'select * from zlecenia')
-    Left = 712
-    Top = 448
   end
 end
